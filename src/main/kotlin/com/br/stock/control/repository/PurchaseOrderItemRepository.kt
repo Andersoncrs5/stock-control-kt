@@ -1,8 +1,7 @@
 package com.br.stock.control.repository
 
 import com.br.stock.control.model.entity.PurchaseOrderItem
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface PurchaseOrderItemRepository: MongoRepository<PurchaseOrderItem, ObjectId> {
+interface PurchaseOrderItemRepository: MongoRepository<PurchaseOrderItem, String> {
 }

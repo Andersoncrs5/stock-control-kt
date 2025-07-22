@@ -10,9 +10,9 @@ import java.time.LocalDateTime
 
 data class PurchaseOrderItem(
     @Id
-    var id: ObjectId,
-    var purchaseOrder: ObjectId,
-    var product: ObjectId,
+    var id: String,
+    var purchaseOrder: String,
+    var product: String,
     var quantity: Integer,
     var unitPrice: BigDecimal,
     var subtotal: BigDecimal,

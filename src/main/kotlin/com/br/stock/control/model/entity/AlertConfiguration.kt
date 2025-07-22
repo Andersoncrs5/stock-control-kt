@@ -10,9 +10,9 @@ import java.time.LocalDateTime
 
 data class AlertConfiguration(
     @Id
-    var id: ObjectId,
+    var id: String,
     var alertType: AlertTypeEnum,
-    var product: ObjectId,
+    var product: String,
     var threshold: Integer,
     var recipientEmails: List<String>,
     var messageTemplate: String,

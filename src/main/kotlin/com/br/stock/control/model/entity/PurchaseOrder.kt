@@ -11,15 +11,15 @@ import java.time.LocalDateTime
 
 data class PurchaseOrder(
     @Id
-    var id: ObjectId,
+    var id: String,
     var orderNumber: String,
-    var supplier: ObjectId,
+    var supplier: String,
     var orderDate: LocalDateTime,
     var expectedDeliveryDate: LocalDateTime,
     var deliveryDate: LocalDateTime,
     var status: StatusEnum,
     var totalAmount: BigDecimal,
-    var placedByUser: ObjectId,
+    var placedByUser: String,
     var notes: String,
     @Version
     var version: Long,
