@@ -1,6 +1,5 @@
 package com.br.stock.control.model.entity
 
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -10,11 +9,15 @@ import java.time.LocalDateTime
 @Document(collection = "stocks")
 data class Stock(
     @Id
-    var id: ObjectId,
-    var product: ObjectId ,
-    var address: ObjectId,
+    var id: String,
+    var product: String,
+    var address: String,
     var quantity: Integer,
+    var locationName: String,
     var lastMovementAt: LocalDateTime,
+    var responsibleUserId: String,
+    var warehouse: String,
+    var isActive: Boolean = true,
     @CreatedDate
     var createdAt: LocalDateTime,
     @LastModifiedDate

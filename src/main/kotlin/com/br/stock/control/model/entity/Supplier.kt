@@ -1,6 +1,5 @@
 package com.br.stock.control.model.entity
 
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -11,7 +10,7 @@ import java.time.LocalDateTime
 @Document(collection = "suppliers")
 data class Supplier(
     @Id
-    var userId: ObjectId,
+    var userId: String,
     var cnpj: String,
     var nameEnterprise: String,
     var notes: String?,

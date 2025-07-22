@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Document(collection = "roles")
 data class Role(
     @Id
-    var id: ObjectId,
+    var id: String,
     var name: String,
     var description: String?,
     @CreatedDate

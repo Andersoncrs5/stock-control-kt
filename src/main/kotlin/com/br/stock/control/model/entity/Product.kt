@@ -14,13 +14,13 @@ import java.time.LocalDateTime
 @Document(collection = "products")
 data class Product(
     @Id
-    var id: ObjectId,
+    var id: String,
     @Indexed(unique = true)
     var name: String,
     var description: String,
     var sku: String,
     var barcode: String,
-    var category: ObjectId,
+    var category: String,
     var unitOfMeasure: UnitOfMeasureEnum,
     var price: BigDecimal,
     var cost: BigDecimal,

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 data class Address(
     @Id
-    var id: ObjectId,
+    var id: String,
     var street: String,
     var number: String? = null,
     var complement: String? = null,

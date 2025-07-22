@@ -9,10 +9,10 @@ import java.time.LocalDateTime
 
 data class Category(
     @Id
-    var id: ObjectId,
+    var id: String,
     var name: String,
     var description: String?,
-    var parentCategory: ObjectId,
+    var parentCategory: String,
     @Version
     var version: Long,
     @CreatedDate
