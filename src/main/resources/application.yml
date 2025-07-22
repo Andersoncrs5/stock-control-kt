@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: stock.control
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: stock_control_db
+      username: username_mongo
+      password: password_mongo
+      authentication-database: admin
+
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
+  mail:
+    host: smtp.seudominio.com
+    port: 587
+    username: seu_email@seudominio.com
+    password: sua_senha_de_email_ou_app_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    jwt:
+      secret: UmSegredoMuitoLongoeComplexoParaAssinarOJWTQueDeveSerGeradoAleatoriamenteEArmazenadoEmVariaveisDeAmbiente
+      expiration: 86400000
+
+  actuator:
+    enabled: true
+    expose:
+      include: "*"
+
+logging:
+  level:
+    root: INFO
+    org.springframework.data.mongodb.core: DEBUG
+    org.springframework.data.redis: DEBUG
+    com.stock.control: DEBUG
+
+server:
+  port: 8080
