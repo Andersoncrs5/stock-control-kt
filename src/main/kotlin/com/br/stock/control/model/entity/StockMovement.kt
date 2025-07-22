@@ -1,7 +1,6 @@
 package com.br.stock.control.model.entity
 
 import com.br.stock.control.model.enum.MovementTypeEnum
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -12,15 +11,15 @@ import java.time.LocalDateTime
 @Document(collection = "stock_movements")
 data class StockMovement(
     @Id
-    var id: ObjectId,
-    var product: ObjectId,
+    var id: String,
+    var product: String,
     var quantity: Integer,
     var movementType: MovementTypeEnum,
-    var sourceLocation: ObjectId,
-    var destinationLocation: ObjectId,
+    var sourceLocation: String,
+    var destinationLocation: String,
     var movementDate: LocalDateTime,
-    var moveByUser: ObjectId,
-    var senderByUser: ObjectId,
+    var moveByUser: String,
+    var senderByUser: String,
     var reason: String,
     var referenceDocument: String,
     var notes: String,

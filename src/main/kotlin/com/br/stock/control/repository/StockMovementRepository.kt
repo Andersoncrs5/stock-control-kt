@@ -4,5 +4,5 @@ import com.br.stock.control.model.entity.StockMovement
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface StockMovementRepository: MongoRepository<StockMovement, ObjectId> {
+interface StockMovementRepository: MongoRepository<StockMovement, String> {
 }
