@@ -11,14 +11,10 @@ import java.time.LocalDateTime
 @Document(collection = "suppliers")
 data class Supplier(
     @Id
-    var id: ObjectId,
-    var name: String,
-    var contactPerson: String,
-    var email: String,
-    var phone: String,
-    var address: String,
+    var userId: ObjectId,
     var cnpj: String,
-    var notes: String,
+    var nameEnterprise: String,
+    var notes: String?,
     @Version
     var version: Long,
     @CreatedDate

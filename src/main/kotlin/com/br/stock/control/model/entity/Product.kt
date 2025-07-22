@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -14,11 +15,12 @@ import java.time.LocalDateTime
 data class Product(
     @Id
     var id: ObjectId,
+    @Indexed(unique = true)
     var name: String,
     var description: String,
     var sku: String,
     var barcode: String,
-    var category: Category,
+    var category: ObjectId,
     var unitOfMeasure: UnitOfMeasureEnum,
     var price: BigDecimal,
     var cost: BigDecimal,

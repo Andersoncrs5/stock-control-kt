@@ -12,7 +12,7 @@ data class Stock(
     @Id
     var id: ObjectId,
     var product: ObjectId ,
-    var location: Location,
+    var address: ObjectId,
     var quantity: Integer,
     var lastMovementAt: LocalDateTime,
     @CreatedDate

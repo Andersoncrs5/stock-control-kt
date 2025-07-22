@@ -24,6 +24,8 @@ data class User(
     var credentialsNonExpired: Boolean = true,
     var accountNonLocked: Boolean = true,
     var roles: Set<Role> = emptySet(),
+    var address: ObjectId,
+    var contact: Contact,
     var lastLoginAt: LocalDateTime? = null,
     @Version
     var version: Long = 0,
