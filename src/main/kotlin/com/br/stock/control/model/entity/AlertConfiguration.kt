@@ -13,7 +13,6 @@ data class AlertConfiguration(
     var id: ObjectId,
     var alertType: AlertTypeEnum,
     var product: ObjectId,
-    var location: Location,
     var threshold: Integer,
     var recipientEmails: List<String>,
     var messageTemplate: String,
