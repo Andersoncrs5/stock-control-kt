@@ -16,18 +16,17 @@ data class User  (
     @Id
     var id: String,
     @Indexed(unique = true)
-    var username: String,
+    var name: String,
     @Indexed(unique = true)
     var email: String,
-    var password: String,
+    var passwordHash: String,
     var fullName: String,
-    var isEnabled: Boolean = true,
     var accountNonExpired: Boolean = true,
     var credentialsNonExpired: Boolean = true,
     var accountNonLocked: Boolean = true,
     var roles: Set<Role> = emptySet(),
-    var addressId: String,
-    var contact: Contact,
+    var addressId: String?,
+    var contact: Contact?,
     var lastLoginAt: LocalDateTime? = null,
     @Version
     var version: Long = 0,

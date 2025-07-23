@@ -26,9 +26,9 @@ data class Product(
     var cost: BigDecimal,
     var imageUrl: String,
     var isActive: Boolean,
-    var minStockLevel: Integer,
-    var maxStockLevel: Integer,
-    var locationSpecificStock: Map<String, Integer>,
+    var minStockLevel: Int,
+    var maxStockLevel: Int,
+    var locationSpecificStock: Map<String, Int>,
     @Version
     var version: Long,
     @CreatedDate
