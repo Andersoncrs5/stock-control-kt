@@ -41,4 +41,10 @@ class ProductService(
         return result
     }
 
+    fun deleteMany(ids: List<String>) {
+        logger.debug("Delete many product by id...")
+        this.productRepository.deleteAllById(ids)
+        logger.debug("Products deleted")
+    }
+
 }
