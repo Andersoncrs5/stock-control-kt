@@ -1,5 +1,6 @@
 package com.br.stock.control.config
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -62,5 +63,17 @@ class GlobalExceptionHandler {
         return ResponseEntity<Any?>(body, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @ExceptionHandler(RequestNotPermitted::class)
+    fun handlerRequestNotPermitted(request: HttpServletRequest, ex: RequestNotPermitted): ResponseEntity<MutableMap<String?, Any?>?> {
+        val response: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+        response.put("timestamp", LocalDateTime.now())
+        response.put("status", 429)
+        response.put("error", ex.cause)
+        response.put("message", ex.message)
+        response.put("path", request.requestURI)
+        response.put("method", request.method)
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body<MutableMap<String?, Any?>?>(response)
+    }
 
 }
