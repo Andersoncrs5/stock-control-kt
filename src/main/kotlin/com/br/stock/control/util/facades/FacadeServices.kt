@@ -8,7 +8,7 @@ import com.br.stock.control.service.WareHouseService
 import org.springframework.stereotype.Service
 
 @Service
-class FacadesServices(
+class FacadeServices(
     val userService: UserService,
     val productService: ProductService,
     val wareHouseService: WareHouseService,
