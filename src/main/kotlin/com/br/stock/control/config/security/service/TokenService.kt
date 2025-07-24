@@ -1,23 +1,21 @@
 package com.br.stock.control.config.security.service
 
 import com.br.stock.control.model.entity.User
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
+import com.nimbusds.jose.crypto.MACSigner
+import com.nimbusds.jose.crypto.MACVerifier
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.SignedJWT
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class TokenService {
@@ -97,21 +95,30 @@ class TokenService {
         return claimSet.claims
     }
 
-    fun extractSubjectToken(token: String): String {
+    fun extractSubjectToken(request: HttpServletRequest): String {
+        val authHeader = request.getHeader("Authorization")
+        val token = authHeader.substring(7)
+
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
 
         return claimSet.subject
     }
 
-    fun extractUserId(token: String): String {
+    fun extractUserId(request: HttpServletRequest): String {
+        val authHeader = request.getHeader("Authorization")
+        val token = authHeader.substring(7)
+
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
 
         return claimSet.claims.getValue("userId").toString()
     }
 
-    fun extractName(token: String): String {
+    fun extractName(request: HttpServletRequest): String {
+        val authHeader = request.getHeader("Authorization")
+        val token = authHeader.substring(7)
+
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
 
