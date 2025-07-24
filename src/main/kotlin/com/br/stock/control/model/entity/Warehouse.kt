@@ -16,7 +16,7 @@ data class Warehouse(
     @Indexed(unique = true)
     var name: String,
     var description: String? = null,
-    var address: String,
+    var addressId: String,
     var responsibleUserId: String,
     var amount: Long,
     var capacityCubicMeters: Double,
