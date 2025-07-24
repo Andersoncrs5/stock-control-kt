@@ -1,24 +1,20 @@
 package com.br.stock.control.controller
 
 import com.br.stock.control.model.entity.User
-import com.br.stock.control.util.facades.FacadesServices
+import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
-import kotlin.Int
-import kotlin.time.Duration
 
 @RestController
 @RequestMapping("/v1/user")
 class UserController(
-    private val facades: FacadesServices
+    private val facades: FacadeServices
 ) {
 
     @GetMapping("me")
@@ -64,6 +60,40 @@ class UserController(
                 path = request.requestURI,
                 method = request.method,
                 body = user
+            )
+        )
+    }
+
+    @DeleteMapping("delete")
+    @SecurityRequirement(name = "bearerAuth")
+    @RateLimiter(name = "deleteApiRateLimiter")
+    fun deleteUser(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
+        val userId: String = facades.tokenService.extractUserId(request)
+
+        val user: User? = this.facades.userService.getUser(userId)
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody<User>(
+                    timestamp = LocalDateTime.now(),
+                    message = "User not found",
+                    path = request.requestURI,
+                    method = request.method,
+                    body = null
+                )
+            )
+        }
+
+        this.facades.userService.deleteUser(user)
+        this.facades.redisService.delete(userId)
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseBody(
+                timestamp = LocalDateTime.now(),
+                message = "User deleted",
+                path = request.requestURI,
+                method = request.method,
+                body = null
             )
         )
     }
