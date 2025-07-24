@@ -4,5 +4,5 @@ enum class WareHouseEnum {
     DRY,
     REFRIGERATED,
     PERISHABLE,
-    DANGER
+    DANGER,
 }
