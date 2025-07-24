@@ -50,4 +50,11 @@ class UserService(
         return save
     }
 
+    @Transactional
+    fun deleteMany(ids: List<String>) {
+        logger.debug("Deleting many user by id")
+        this.repository.deleteAllById(ids)
+        logger.debug("Users deleted!")
+    }
+
 }
