@@ -118,4 +118,21 @@ class UserServiceTest {
         assertNull(result)
     }
 
+    @Test
+    fun `should delete many products`() {
+        val ids = listOf(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+        )
+
+        doNothing().`when`(userRepository).deleteAllById(ids)
+
+        this.userService.deleteMany(ids)
+
+        verify(userRepository, times(1)).deleteAllById(ids)
+    }
+
 }
