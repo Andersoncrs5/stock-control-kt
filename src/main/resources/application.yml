@@ -2,6 +2,24 @@ spring:
   application:
     name: stock.control
 
+  resilience4j.ratelimiter:
+    instances:
+      readApiRateLimiter:
+        limitForPeriod: 30
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
+      basicApiRateLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
+      criticalApiRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 5s
+        timeoutDuration: 0s
+
+
   data:
     mongodb:
       host: localhost
