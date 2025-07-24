@@ -27,21 +27,23 @@ class TokenService {
 
     fun generateToken(user: User): String {
         if (secret == null || secret.isBlank()) {
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null");
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null")
         }
 
         val claimsSet: JWTClaimsSet = JWTClaimsSet.Builder()
             .subject(user.email)
+            .claim("userId", user.id)
+            .claim("name", user.name)
             .issueTime(Date.from(Instant.now()))
             .expirationTime(Date.from(this.genExpirationDate()))
             .claim("roles", user.roles.map { it.name }.toList())
-            .build();
+            .build()
 
         val header: JWSHeader = JWSHeader(JWSAlgorithm.HS256)
-        val signedJWT: SignedJWT = SignedJWT(header, claimsSet);
+        val signedJWT: SignedJWT = SignedJWT(header, claimsSet)
         signedJWT.sign(MACSigner(secret.toByteArray()))
 
-        return signedJWT.serialize();
+        return signedJWT.serialize()
     }
 
     fun generateRefreshToken(user: User): String {
@@ -51,6 +53,8 @@ class TokenService {
 
         val claimsSet: JWTClaimsSet = JWTClaimsSet.Builder()
             .subject(user.email)
+            .claim("userId", user.id)
+            .claim("name", user.name)
             .issueTime(Date.from(Instant.now()))
             .expirationTime(Date.from(this.genExpirationDateRefreshToken()))
             .claim("roles", user.roles.map { it.name }.toList())
@@ -68,7 +72,7 @@ class TokenService {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
         val signedJWT: SignedJWT = SignedJWT.parse(token)
-        val verifier: MACVerifier = MACVerifier(secret?.toByteArray())
+        val verifier = MACVerifier(secret?.toByteArray())
 
         if (!signedJWT.verify(verifier)) {  throw ResponseStatusException(HttpStatus.UNAUTHORIZED)  }
 
@@ -84,6 +88,34 @@ class TokenService {
 
     private fun genExpirationDateRefreshToken(): Instant {
         return LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.of("-03:00"))
+    }
+
+    fun extractAllClaims(token: String): Map<String, Any> {
+        val signedJWT: SignedJWT = SignedJWT.parse(token)
+        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
+
+        return claimSet.claims
+    }
+
+    fun extractSubjectToken(token: String): String {
+        val signedJWT: SignedJWT = SignedJWT.parse(token)
+        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
+
+        return claimSet.subject
+    }
+
+    fun extractUserId(token: String): String {
+        val signedJWT: SignedJWT = SignedJWT.parse(token)
+        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
+
+        return claimSet.claims.getValue("userId").toString()
+    }
+
+    fun extractName(token: String): String {
+        val signedJWT: SignedJWT = SignedJWT.parse(token)
+        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
+
+        return claimSet.claims.getValue("name").toString()
     }
 
 }
