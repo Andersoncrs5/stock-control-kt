@@ -125,4 +125,22 @@ class ProductServiceTest {
         Assertions.assertEquals(product.name, result.content[1].name)
         verify(productRepository, times(1)).findWithFilters(name, min, max, pageable)
     }
+
+    @Test
+    fun `should delete many products`() {
+        val ids = listOf(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+        )
+
+        doNothing().`when`(productRepository).deleteAllById(ids)
+
+        this.productService.deleteMany(ids)
+
+        verify(productRepository, times(1)).deleteAllById(ids)
+    }
+
 }
