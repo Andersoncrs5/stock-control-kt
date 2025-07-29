@@ -4,6 +4,11 @@ spring:
 
   resilience4j.ratelimiter:
     instances:
+      authSystemApiRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
       deleteApiRateLimiter:
         limitForPeriod: 10
         limitRefreshPeriod: 10s
