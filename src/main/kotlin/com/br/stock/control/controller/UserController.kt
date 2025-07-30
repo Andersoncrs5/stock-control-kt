@@ -21,23 +21,7 @@ class UserController(
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
     fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
-        val userId = facades.tokenService.extractUserId(request)
-
-        var user: User? = this.facades.redisService.get<User>(userId)
-
-        if (user != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseBody<User>(
-                    timestamp = LocalDateTime.now(),
-                    message = "User founded",
-                    path = request.requestURI,
-                    method = request.method,
-                    body = user
-                )
-            )
-        }
-
-        user = this.facades.userService.getUser(userId)
+        val userId = facades.tokenService.extractUserId(request) val user = this.facades.userService.getUser(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -50,8 +34,6 @@ class UserController(
                 )
             )
         }
-
-        this.facades.redisService.set(userId, user, java.time.Duration.ofHours(10))
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseBody<User>(
@@ -84,7 +66,6 @@ class UserController(
             )
         }
 
-        this.facades.userService.deleteUser(user)
         this.facades.redisService.delete(userId)
 
         return ResponseEntity.status(HttpStatus.OK).body(
