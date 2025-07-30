@@ -21,7 +21,8 @@ class UserController(
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
     fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
-        val userId = facades.tokenService.extractUserId(request) val user = this.facades.userService.getUser(userId)
+        val userId = facades.tokenService.extractUserId(request)
+        val user = this.facades.userService.getUser(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
