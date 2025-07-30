@@ -10,8 +10,8 @@ class CryptoService(
 ) {
     private val logger = LoggerFactory.getLogger(CryptoService::class.java)
 
-    fun cryptoPassword(password: String): String{
-        logger.debug("Encodering password...")
+    fun encoderPassword(password: String): String{
+        logger.debug("Encoding password...")
         val encode = this.passwordEncoder.encode(password)
         logger.debug("Password encoder!")
         return encode
