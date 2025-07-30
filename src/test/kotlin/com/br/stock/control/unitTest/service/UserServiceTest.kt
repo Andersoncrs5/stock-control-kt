@@ -18,6 +18,8 @@ import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExtendWith(MockitoExtension::class)
 class UserServiceTest {
@@ -51,7 +53,8 @@ class UserServiceTest {
             )
         ),
         addressId = UUID.randomUUID().toString(),
-        contact = Contact()
+        contact = Contact(),
+        refreshToken = ""
     )
 
     @Test
@@ -134,5 +137,75 @@ class UserServiceTest {
 
         verify(userRepository, times(1)).deleteAllById(ids)
     }
+
+    @Test
+    fun `should return true`() {
+        `when`(userRepository.existsByEmail(anyString())).thenReturn(true)
+
+        val existsByEmail: Boolean = this.userService.existsByEmail("")
+
+        assertTrue(existsByEmail, "The result is false")
+
+        verify(userRepository, times(1)).existsByEmail(anyString())
+    }
+
+    @Test
+    fun `should return false`() {
+        `when`(userRepository.existsByEmail(anyString())).thenReturn(false)
+
+        val existsByEmail: Boolean = this.userService.existsByEmail("")
+
+        assertFalse { existsByEmail }
+
+        verify(userRepository, times(1)).existsByEmail(anyString())
+    }
+
+    @Test
+    fun `should get user by name`() {
+        val userCopy = this.user.copy()
+        `when`(userRepository.findByName(user.name)).thenReturn(userCopy)
+
+        val result = this.userService.getUserByName(user.name)
+
+        assertNotNull(result, "User is null")
+        assertEquals(userCopy.id, result.id, "Ids are different")
+        assertEquals(userCopy.name, result.name, "Names are different")
+
+        verify(userRepository, times(1)).findByName(user.name)
+    }
+
+    @Test
+    fun `should get user by name return null`() {
+        `when`(userRepository.findByName(user.name)).thenReturn(null)
+
+        val result = this.userService.getUserByName(user.name)
+
+        assertNull(result, "User is not null")
+
+        verify(userRepository, times(1)).findByName(user.name)
+    }
+
+    @Test
+    fun `should return true in get user by name`() {
+        `when`(userRepository.existsByName(anyString())).thenReturn(true)
+
+        val exists: Boolean = this.userService.existsByName("")
+
+        assertTrue(exists, "The result is false")
+
+        verify(userRepository, times(1)).existsByName(anyString())
+    }
+
+    @Test
+    fun `should return false in get user by name`() {
+        `when`(userRepository.existsByName(anyString())).thenReturn(false)
+
+        val exists: Boolean = this.userService.existsByName("")
+
+        assertFalse { exists }
+
+        verify(userRepository, times(1)).existsByName(anyString())
+    }
+
 
 }
