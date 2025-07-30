@@ -57,4 +57,14 @@ class UserService(
         logger.debug("Users deleted!")
     }
 
+    @Transactional(readOnly = true)
+    fun existsByEmail(email: String): Boolean {
+        return this.repository.existsByEmail(email)
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserByName(name: String): User? {
+        return this.repository.findByName(name)
+    }
+
 }
