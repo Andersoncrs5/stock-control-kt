@@ -1,5 +1,6 @@
 package com.br.stock.control.model.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -14,21 +15,21 @@ import java.time.LocalDateTime
 @Document(collection = "users")
 data class User  (
     @Id
-    var id: String,
+    var id: String = "",
     @Indexed(unique = true)
-    var name: String,
+    var name: String = "",
     @Indexed(unique = true)
-    var email: String,
-    var passwordHash: String,
-    var fullName: String,
+    var email: String = "",
+    var passwordHash: String = "",
+    var fullName: String = "",
     var accountNonExpired: Boolean = true,
     var credentialsNonExpired: Boolean = true,
     var accountNonLocked: Boolean = true,
     var roles: Set<Role> = emptySet(),
-    var addressId: String?,
-    var contact: Contact?,
+    var addressId: String? = null,
+    var contact: Contact? = null,
     var lastLoginAt: LocalDateTime? = null,
-    var refreshToken: String?,
+    var refreshToken: String? = null,
     @Version
     var version: Long = 0,
     @CreatedDate
