@@ -8,6 +8,7 @@ import com.nimbusds.jose.crypto.MACVerifier
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -20,14 +21,19 @@ import java.util.*
 @Service
 class TokenService {
 
+    private val logger = LoggerFactory.getLogger(TokenService::class.java)
+
     @Value("\${spring.security.jwt.secret}")
     private val secret: String? = null
 
     fun generateToken(user: User): String {
+        logger.debug("Generating token...")
         if (secret == null || secret.isBlank()) {
+            logger.error("secret key came null")
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null")
         }
 
+        logger.debug("Setting claims to token..")
         val claimsSet: JWTClaimsSet = JWTClaimsSet.Builder()
             .subject(user.email)
             .claim("userId", user.id)
@@ -41,13 +47,17 @@ class TokenService {
         val signedJWT: SignedJWT = SignedJWT(header, claimsSet)
         signedJWT.sign(MACSigner(secret.toByteArray()))
 
+        logger.debug("generated token")
         return signedJWT.serialize()
     }
 
     fun generateRefreshToken(user: User): String {
+        logger.debug("Generating refreshToken...")
         if (secret == null || secret.isBlank()) {
+            logger.error("Error the generate refreshToken! secret came null")
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null");
         }
+
 
         val claimsSet: JWTClaimsSet = JWTClaimsSet.Builder()
             .subject(user.email)
