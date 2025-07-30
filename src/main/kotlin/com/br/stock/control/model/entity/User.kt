@@ -28,6 +28,7 @@ data class User  (
     var addressId: String?,
     var contact: Contact?,
     var lastLoginAt: LocalDateTime? = null,
+    var refreshToken: String?,
     @Version
     var version: Long = 0,
     @CreatedDate
