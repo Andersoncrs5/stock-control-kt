@@ -5,23 +5,23 @@ spring:
   resilience4j.ratelimiter:
     instances:
       authSystemApiRateLimiter:
-        limitForPeriod: 5
+        limitForPeriod: 20
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
       deleteApiRateLimiter:
-        limitForPeriod: 10
-        limitRefreshPeriod: 10s
-        timeoutDuration: 0s
-
-      readApiRateLimiter:
         limitForPeriod: 30
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
+      readApiRateLimiter:
+        limitForPeriod: 40
+        limitRefreshPeriod: 8s
+        timeoutDuration: 0s
+
       basicApiRateLimiter:
-        limitForPeriod: 20
-        limitRefreshPeriod: 10s
+        limitForPeriod: 30
+        limitRefreshPeriod: 8s
         timeoutDuration: 0s
 
       criticalApiRateLimiter:
@@ -29,15 +29,14 @@ spring:
         limitRefreshPeriod: 5s
         timeoutDuration: 0s
 
-
   data:
     mongodb:
-      host: localhost
+      host: 127.0.0.1
       port: 27017
       database: stock_control_db
-      username: username_mongo
-      password: password_mongo
-      authentication-database: admin
+#      username:
+#      password:
+#      authentication-database:
 
   redis:
     host: localhost
