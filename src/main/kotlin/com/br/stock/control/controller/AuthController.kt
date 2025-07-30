@@ -1,11 +1,14 @@
 package com.br.stock.control.controller
 
 import com.br.stock.control.model.dto.user.RegisterUserDTO
+import com.br.stock.control.model.dto.user.UserDTO
 import com.br.stock.control.model.entity.User
+import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.mappers.user.LoginUserDTO
 import com.br.stock.control.util.mappers.user.RegisterDTOtoUserMapper
 import com.br.stock.control.util.responses.ResponseBody
+import com.br.stock.control.util.responses.ResponseToken
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
@@ -17,18 +20,19 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
+import java.util.UUID
 
 @RestController
 @RequestMapping("/v1/auth")
 class AuthController(
     private val facade: FacadeServices,
-    private val mapper: RegisterDTOtoUserMapper
+    private val mapper: RegisterDTOtoUserMapper,
+    private val facadesMappers: FacadeMappers
 ) {
 
     @PostMapping("/register")
-    @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun register(@Valid @RequestBody dto: RegisterUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<User>?> {
+    fun register(@Valid @RequestBody dto: RegisterUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>?> {
         val existsByEmail = this.facade.userService.existsByEmail(dto.email)
 
         if (existsByEmail) {
@@ -40,11 +44,27 @@ class AuthController(
             )
         }
 
+        val existsByName: Boolean = this.facade.userService.existsByName(dto.name)
+
+        if (existsByName) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Name already exists!",
+                    request.requestURI, request.method, null
+                )
+            )
+        }
+
         val user: User = this.mapper.toUser(dto)
 
-        user.passwordHash = this.facade.cryptoService.cryptoPassword(user.passwordHash)
+        user.passwordHash = this.facade.cryptoService.encoderPassword(user.passwordHash)
+
+        user.id = UUID.randomUUID().toString()
+        user.email = user.email.lowercase().trim()
 
         val saveUser: User = this.facade.userService.saveUser(user)
+
+        val userDto: UserDTO = this.facadesMappers.userDTOMapper.toDTO(saveUser)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ResponseBody(
@@ -52,16 +72,63 @@ class AuthController(
                 "User created",
                 request.requestURI,
                 request.method,
-                saveUser
+                userDto
             )
         )
     }
 
     @PostMapping("/login")
-    @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun login(@Valid @RequestBody dto: LoginUserDTO, request: HttpServletRequest)/*: ResponseEntity<ResponseBody<Any>>*/ {
+    fun login(@Valid @RequestBody dto: LoginUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<Any>> {
         val user = this.facade.userService.getUserByName(dto.name)
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ResponseBody(
+                    LocalDateTime.now(),
+                    "Login invalid",
+                    request.requestURI,
+                    request.method,
+                    null
+                )
+            )
+        }
+
+        if (user.accountNonLocked) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ResponseBody(
+                    LocalDateTime.now(),
+                    "You are blocked",request.requestURI,
+                    request.method,null
+                )
+            )
+        }
+
+        val checkPassword: Boolean = this.facade.cryptoService.verifyPassword(dto.password, user.passwordHash)
+
+        if (!checkPassword) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ResponseBody(
+                    LocalDateTime.now(),
+                    "Login invalid",request.requestURI,
+                    request.method,null)
+            )
+        }
+
+        val token: String = this.facade.tokenService.generateToken(user)
+        val refreshToken: String = this.facade.tokenService.generateRefreshToken(user)
+
+        val tokens: ResponseToken = ResponseToken(token, refreshToken, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7))
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseBody(
+                LocalDateTime.now(),
+                "Logged with successfully!",
+                request.requestURI,
+                request.method,
+                tokens
+            )
+        )
     }
 
 }
