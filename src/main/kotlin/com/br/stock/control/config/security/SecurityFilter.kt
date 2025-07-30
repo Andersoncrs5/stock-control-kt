@@ -42,8 +42,8 @@ class SecurityFilter(
     }
 
     fun recoverToken(request: HttpServletRequest): String? {
-        val authHeader: String = request.getHeader("Authorization")
-        if (authHeader.isBlank()) {
+        val authHeader: String? = request.getHeader("Authorization")
+        if (authHeader.isNullOrBlank()) {
             return null
         }
 
