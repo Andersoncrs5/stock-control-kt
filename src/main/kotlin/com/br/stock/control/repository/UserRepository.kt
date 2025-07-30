@@ -6,4 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 interface UserRepository: MongoRepository<User, String> {
     fun findByEmail(email: String): UserDetails?
+    fun existsByEmail(email: String): Boolean
+    fun existsByName(email: String): Boolean
+    fun findByName(name: String): User?
 }
