@@ -67,4 +67,9 @@ class UserService(
         return this.repository.findByName(name)
     }
 
+    @Transactional(readOnly = true)
+    fun existsByName(name: String): Boolean {
+        return this.repository.existsByName(name)
+    }
+
 }
