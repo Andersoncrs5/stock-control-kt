@@ -1,6 +1,8 @@
 package com.br.stock.control.controller
 
+import com.br.stock.control.model.dto.user.UserDTO
 import com.br.stock.control.model.entity.User
+import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter
@@ -14,19 +16,20 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/v1/user")
 class UserController(
-    private val facades: FacadeServices
+    private val facades: FacadeServices,
+    private val facadeMappers: FacadeMappers
 ) {
 
     @GetMapping("me")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
-    fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
+    fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
         val userId = facades.tokenService.extractUserId(request)
-        val user = this.facades.userService.getUser(userId)
+        val user: User? = this.facades.userService.getUser(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseBody<User>(
+                ResponseBody<UserDTO>(
                     timestamp = LocalDateTime.now(),
                     message = "User not found",
                     path = request.requestURI,
@@ -36,13 +39,15 @@ class UserController(
             )
         }
 
+        val dto = facadeMappers.userDTOMapper.toDTO(user)
+
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseBody<User>(
+            ResponseBody<UserDTO>(
                 timestamp = LocalDateTime.now(),
                 message = "User founded",
                 path = request.requestURI,
                 method = request.method,
-                body = user
+                body = dto
             )
         )
     }
@@ -50,7 +55,7 @@ class UserController(
     @DeleteMapping("delete")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "deleteApiRateLimiter")
-    fun deleteUser(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
+    fun delete(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
         val userId: String = facades.tokenService.extractUserId(request)
 
         val user: User? = this.facades.userService.getUser(userId)
