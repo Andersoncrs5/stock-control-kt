@@ -17,27 +17,32 @@ class SecurityFilter(
     private val userRepository: UserRepository
 ): OncePerRequestFilter() {
 
-    override fun doFilterInternal(request: HttpServletRequest,response: HttpServletResponse,filterChain: FilterChain) {
-        val token: String? = this.recoverToken(request);
-
-        if (token != null) {
-            val login: String = tokenService.validateToken(token)
-
-            if (login.isEmpty()) {
-                val user: UserDetails? = userRepository.findByEmail(login);
-
-                if (user != null) {
-                    val authentication = UsernamePasswordAuthenticationToken(
-                        user,
-                        null,
-                        user.authorities
-                    )
-
-                    SecurityContextHolder.getContext().authentication = authentication
-                }
-
-            }
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val token = recoverToken(request) ?: run {
+            filterChain.doFilter(request, response)
+            return
         }
+
+        val login = tokenService.validateToken(token)
+        if (login.isBlank()) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val user = userRepository.findByEmail(login)
+        if (user != null) {
+            val authentication = UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                user.authorities
+            )
+            SecurityContextHolder.getContext().authentication = authentication
+        }
+
         filterChain.doFilter(request, response)
     }
 
@@ -49,5 +54,4 @@ class SecurityFilter(
 
         return authHeader.replace("Bearer ", "")
     }
-
 }
