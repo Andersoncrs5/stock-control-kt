@@ -1,6 +1,7 @@
 package com.br.stock.control.integration.user
 
 import com.br.stock.control.model.dto.user.RegisterUserDTO
+import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.util.facades.FacadeRepository
 import com.br.stock.control.util.mappers.user.LoginUserDTO
 import com.fasterxml.jackson.databind.JsonNode
@@ -93,6 +94,20 @@ class UserControllerTest {
             .andExpect(jsonPath("$.message").value("User deleted"))
     }
 
+    @Test
+    fun `should updated user`() {
+        val node: JsonNode = this.createUserAndLog()
 
+        val token = node.get("body")?.get("token")?.asText()
+        assertNotNull(token, "Token came null")
+
+        val dto = UpdateUserDTO("user update", "12345678", "user full name updated")
+
+        mockMvc.perform(put(this.url)
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto))
+            .header("Authorization", "Bearer $token"))
+            .andExpect(status().isOk)
+            .andDo(MockMvcResultHandlers.print())
+    }
 
 }
