@@ -25,7 +25,7 @@ class UserController(
     @RateLimiter(name = "readApiRateLimiter")
     fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
         val userId = facades.tokenService.extractUserId(request)
-        val user: User? = this.facades.userService.getUser(userId)
+        val user: User? = this.facades.userService.get(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -58,7 +58,7 @@ class UserController(
     fun delete(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
         val userId: String = facades.tokenService.extractUserId(request)
 
-        val user: User? = this.facades.userService.getUser(userId)
+        val user: User? = this.facades.userService.get(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -81,6 +81,44 @@ class UserController(
                 path = request.requestURI,
                 method = request.method,
                 body = null
+            )
+        )
+    }
+
+    @GetMapping("{userId}")
+    @SecurityRequirement(name = "bearerAuth")
+    @RateLimiter(name = "readApiRateLimiter")
+    fun getUser(@PathVariable userId: String, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
+        if (userId.isBlank()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody<UserDTO>(
+                    timestamp = LocalDateTime.now(),
+                    message = "User id is required", path = request.requestURI,
+                    method = request.method,body = null
+                )
+            )
+        }
+
+        val user: User? = this.facades.userService.get(userId)
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody<UserDTO>(
+                    timestamp = LocalDateTime.now(), message = "User not found",
+                    path = request.requestURI, method = request.method, body = null
+                )
+            )
+        }
+
+        val dto = facadeMappers.userDTOMapper.toDTO(user)
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseBody<UserDTO>(
+                timestamp = LocalDateTime.now(),
+                message = "User founded",
+                path = request.requestURI,
+                method = request.method,
+                body = dto
             )
         )
     }
