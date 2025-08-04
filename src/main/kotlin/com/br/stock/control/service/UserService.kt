@@ -4,12 +4,9 @@ import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.UserRepository
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import java.util.Optional
-import java.util.UUID
 
 @Slf4j
 @Service
@@ -20,7 +17,7 @@ class UserService(
     private val logger = LoggerFactory.getLogger(UserService::class.java)
 
     @Transactional(readOnly = true)
-    fun getUser(id: String): User? {
+    fun get(id: String): User? {
         logger.debug("Getting user in database...")
         val orElse: User? = this.repository.findById(id).orElse(null)
         logger.debug("Get user! returning")
@@ -70,6 +67,14 @@ class UserService(
     @Transactional(readOnly = true)
     fun existsByName(name: String): Boolean {
         return this.repository.existsByName(name)
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserByRefreshToken(refreshToken: String): Optional<User>{
+        logger.debug("Searching user by refreshtoken")
+        val user = this.repository.findByRefreshToken(refreshToken)
+        logger.debug("Returning user")
+        return user
     }
 
 }
