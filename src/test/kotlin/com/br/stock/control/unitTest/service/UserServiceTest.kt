@@ -54,7 +54,7 @@ class UserServiceTest {
         ),
         addressId = UUID.randomUUID().toString(),
         contact = Contact(),
-        refreshToken = ""
+        refreshToken = "${UUID.randomUUID()}-${UUID.randomUUID()}"
     )
 
     @Test
@@ -64,7 +64,7 @@ class UserServiceTest {
 
         `when`(userRepository.findById(userId)).thenReturn(Optional.of(userCopy))
 
-        val result = userService.getUser(userId)
+        val result = userService.get(userId)
 
         assertNotNull(result, "User is null")
         assertEquals(userId, result.id)
@@ -116,7 +116,7 @@ class UserServiceTest {
     fun `should return null`() {
         `when`(userRepository.findById(any())).thenReturn(Optional.empty())
 
-        val result = userService.getUser(UUID.randomUUID().toString())
+        val result = userService.get(UUID.randomUUID().toString())
 
         assertNull(result)
     }
@@ -207,5 +207,28 @@ class UserServiceTest {
         verify(userRepository, times(1)).existsByName(anyString())
     }
 
+    @Test
+    fun `should return user`() {
+        val refreshToken = user.refreshToken as String
+        `when`(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of<User>(this.user))
+
+        val result = this.userService.getUserByRefreshToken(refreshToken)
+
+        assertTrue(result.isPresent, "User is null")
+
+        verify(userRepository, times(1)).findByRefreshToken(refreshToken)
+    }
+
+    @Test
+    fun `should return null where search user by refresh token`() {
+        val refreshToken = user.refreshToken as String
+        `when`(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.empty())
+
+        val result = this.userService.getUserByRefreshToken(refreshToken)
+
+        assertTrue(result.isEmpty, "User is not null")
+
+        verify(userRepository, times(1)).findByRefreshToken(refreshToken)
+    }
 
 }
