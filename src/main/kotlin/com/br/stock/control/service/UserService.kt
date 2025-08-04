@@ -1,5 +1,6 @@
 package com.br.stock.control.service
 
+import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.UserRepository
 import lombok.extern.slf4j.Slf4j
@@ -74,6 +75,12 @@ class UserService(
         logger.debug("Searching user by refreshtoken")
         val user = this.repository.findByRefreshToken(refreshToken)
         logger.debug("Returning user")
+        return user
+    }
+
+    fun mergeUsersData(user: User, dto: UpdateUserDTO): User {
+        if (dto.name.isNotBlank()) { user.name = dto.name.toString() }
+        if (dto.fullName.isNotBlank()) { user.fullName = dto.fullName.toString() }
         return user
     }
 
