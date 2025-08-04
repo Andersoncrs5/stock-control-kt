@@ -10,16 +10,13 @@ import com.br.stock.control.util.mappers.user.RegisterDTOtoUserMapper
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
+import java.util.Optional
 import java.util.UUID
 
 @RestController
@@ -85,11 +82,8 @@ class AuthController(
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
-                    LocalDateTime.now(),
-                    "Login invalid",
-                    request.requestURI,
-                    request.method,
-                    null
+                    LocalDateTime.now(), "Login invalid",
+                    request.requestURI, request.method, null
                 )
             )
         }
@@ -97,8 +91,7 @@ class AuthController(
         if (user.accountNonLocked) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
-                    LocalDateTime.now(),
-                    "You are blocked",request.requestURI,
+                    LocalDateTime.now(), "You are blocked",request.requestURI,
                     request.method,null
                 )
             )
@@ -118,17 +111,64 @@ class AuthController(
         val token: String = this.facade.tokenService.generateToken(user)
         val refreshToken: String = this.facade.tokenService.generateRefreshToken(user)
 
-        val tokens: ResponseToken = ResponseToken(token, refreshToken, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7))
+        val tokens = ResponseToken(token, refreshToken, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7))
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseBody(
                 LocalDateTime.now(),
                 "Logged with successfully!",
+                request.requestURI, request.method, tokens
+            )
+        )
+    }
+
+    @GetMapping("/refresh-token/{refreshToken}")
+    @RateLimiter(name = "authSystemApiRateLimiter")
+    fun refreshToken(@PathVariable refresh: String, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken>?> {
+        if (refresh.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseBody(
+                    LocalDateTime.now(),
+                    "Refresh token is required",
+                    request.requestURI,
+                    request.method,
+                    null
+                )
+            )
+        }
+
+        val opt: Optional<User> = this.facade.userService.getUserByRefreshToken(refresh)
+
+        if (opt.isEmpty) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ResponseBody(
+                    LocalDateTime.now(),
+                    "Unauthorized",
+                    request.requestURI,
+                    request.method,
+                    null
+                )
+            )
+        }
+
+        val user: User = opt.get()
+
+        val token: String = this.facade.tokenService.generateToken(user)
+        val refreshToken: String = this.facade.tokenService.generateRefreshToken(user)
+
+        val tokens = ResponseToken(token, refreshToken, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7))
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseBody(
+                LocalDateTime.now(),
+                "Tokens generated!",
                 request.requestURI,
                 request.method,
                 tokens
             )
         )
     }
+
+
 
 }
