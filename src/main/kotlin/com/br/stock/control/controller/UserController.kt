@@ -128,7 +128,7 @@ class UserController(
     @PutMapping
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
-    fun update(@Valid dto: UpdateUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
+    fun update(@Valid @RequestBody dto: UpdateUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
         val userId: String = facades.tokenService.extractUserId(request)
         val user: User? = facades.userService.get(userId)
 
