@@ -129,7 +129,7 @@ class UserController(
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
     fun update(@Valid dto: UpdateUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
-        val userId = facades.tokenService.extractUserId(request)
+        val userId: String = facades.tokenService.extractUserId(request)
         val user: User? = facades.userService.get(userId)
 
         if (user == null) {
@@ -141,13 +141,24 @@ class UserController(
             )
         }
 
-        val mergedUser = facades.userService.mergeUsersData(user, dto)
+        val checkName: Boolean = this.facades.userService.existsByName(dto.name)
+
+        if (checkName) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(), message = "Name already exists!",
+                    path = request.requestURI, method = request.method, body = null
+                )
+            )
+        }
+
+        val mergedUser: User = facades.userService.mergeUsersData(user, dto)
 
         if (dto.passwordHash.isNotBlank()) { mergedUser.passwordHash = facades.cryptoService.encoderPassword(dto.passwordHash) }
 
-        val updatedUser = facades.userService.updateUser(mergedUser)
+        val updatedUser: User = facades.userService.updateUser(mergedUser)
 
-        val userDTO = facadeMappers.userDTOMapper.toDTO(updatedUser)
+        val userDTO: UserDTO = facadeMappers.userDTOMapper.toDTO(updatedUser)
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseBody(
