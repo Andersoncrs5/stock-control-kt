@@ -1,5 +1,6 @@
 package com.br.stock.control.config
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.github.resilience4j.ratelimiter.RequestNotPermitted
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -68,6 +69,19 @@ class GlobalExceptionHandler {
         val response: MutableMap<String?, Any?> = HashMap<String?, Any?>()
         response.put("timestamp", LocalDateTime.now())
         response.put("status", 429)
+        response.put("error", ex.cause)
+        response.put("message", ex.message)
+        response.put("path", request.requestURI)
+        response.put("method", request.method)
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body<MutableMap<String?, Any?>?>(response)
+    }
+
+    @ExceptionHandler(MismatchedInputException::class)
+    fun handleMissingParam(ex: MismatchedInputException, request: HttpServletRequest): ResponseEntity<MutableMap<String?, Any?>?> {
+        val response: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+        response.put("timestamp", LocalDateTime.now())
+        response.put("status", 400)
         response.put("error", ex.cause)
         response.put("message", ex.message)
         response.put("path", request.requestURI)
