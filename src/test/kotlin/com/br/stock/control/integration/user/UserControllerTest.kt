@@ -3,7 +3,7 @@ package com.br.stock.control.integration.user
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.util.facades.FacadeRepository
-import com.br.stock.control.util.mappers.user.LoginUserDTO
+import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
@@ -79,6 +79,7 @@ class UserControllerTest {
             .header("Authorization", "Bearer $token"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.message").value("User founded"))
+
     }
 
     @Test
@@ -108,6 +109,8 @@ class UserControllerTest {
             .header("Authorization", "Bearer $token"))
             .andExpect(status().isOk)
             .andDo(MockMvcResultHandlers.print())
+            .andExpect(jsonPath("$.body.name").value(dto.name))
+            .andExpect(jsonPath("$.body.fullName").value(dto.fullName))
     }
 
 }
