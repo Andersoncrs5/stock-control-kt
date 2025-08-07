@@ -2,7 +2,7 @@ package com.br.stock.control.integration.user
 
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.util.facades.FacadeRepository
-import com.br.stock.control.util.mappers.user.LoginUserDTO
+import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
