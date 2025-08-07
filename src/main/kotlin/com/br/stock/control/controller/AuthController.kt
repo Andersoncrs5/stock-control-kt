@@ -5,7 +5,7 @@ import com.br.stock.control.model.dto.user.UserDTO
 import com.br.stock.control.model.entity.User
 import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
-import com.br.stock.control.util.mappers.user.LoginUserDTO
+import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.util.mappers.user.RegisterDTOtoUserMapper
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken

@@ -1,4 +1,4 @@
-package com.br.stock.control.util.mappers.user
+package com.br.stock.control.model.dto.user
 
 data class LoginUserDTO(
     val name: String,
