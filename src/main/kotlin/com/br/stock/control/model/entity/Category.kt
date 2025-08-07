@@ -13,6 +13,7 @@ data class Category(
     var name: String,
     var description: String?,
     var parentCategory: String,
+    var active: Boolean = true,
     @Version
     var version: Long,
     @CreatedDate
