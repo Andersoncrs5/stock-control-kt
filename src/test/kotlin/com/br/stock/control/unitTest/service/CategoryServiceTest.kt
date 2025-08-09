@@ -28,7 +28,7 @@ class CategoryServiceTest {
 
     val category = Category(
         id = UUID.randomUUID().toString(), name = "category ${Random.nextLong(1000)}",
-        description = "Description", parentCategory = "", version = 0,
+        description = "Description", version = 0,
         createdAt = LocalDateTime.now(), updatedAt = LocalDateTime.now()
     )
 
@@ -84,7 +84,7 @@ class CategoryServiceTest {
     fun `should get category by name`() {
         whenever(repository.findById(category.name)).thenReturn(Optional.of(category))
 
-        val result: Optional<Category> = this.service.get(category.name)
+        val result: Optional<Category> = this.service.getByName(category.name)
 
         assertTrue(result.isPresent, "Category is empty")
 
@@ -96,7 +96,7 @@ class CategoryServiceTest {
     fun `should get not category by name`() {
         `when`(repository.findById(category.name)).thenReturn(Optional.empty())
 
-        val result: Optional<Category> = this.service.get(category.name)
+        val result: Optional<Category> = this.service.getByName(category.name)
 
         assertTrue(result.isEmpty, "Category is present")
 
