@@ -84,4 +84,31 @@ class UserService(
         return user
     }
 
+    @Transactional
+    fun changeStatusAccountNonExpired(user: User): User {
+        logger.debug("Changing status AccountNonExpired")
+        user.accountNonExpired = !user.accountNonExpired
+        val save = this.repository.save(user)
+        logger.debug("Status accountNonExpired changed")
+        return save
+    }
+
+    @Transactional
+    fun changeStatusAccountNonLocked(user: User): User {
+        logger.debug("Changing status accountNonLocked")
+        user.accountNonLocked = !user.accountNonLocked
+        val save = this.repository.save(user)
+        logger.debug("Status accountNonLocked changed")
+        return save
+    }
+
+    @Transactional
+    fun changeStatusCredentialsNonExpired(user: User): User {
+        logger.debug("Changing status credentialsNonExpired")
+        user.credentialsNonExpired = !user.credentialsNonExpired
+        val save = this.repository.save(user)
+        logger.debug("Status credentialsNonExpired changed")
+        return save
+    }
+
 }
