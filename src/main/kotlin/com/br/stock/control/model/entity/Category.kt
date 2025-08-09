@@ -1,6 +1,5 @@
 package com.br.stock.control.model.entity
 
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -12,7 +11,6 @@ data class Category(
     var id: String,
     var name: String,
     var description: String?,
-    var parentCategory: String,
     var active: Boolean = true,
     @Version
     var version: Long,
