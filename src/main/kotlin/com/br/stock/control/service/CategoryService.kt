@@ -21,6 +21,14 @@ class CategoryService(
         return category
     }
 
+    @Transactional(readOnly = true)
+    fun getAll(): List<Category> {
+        logger.debug("Getting all categories...")
+        val categories: List<Category> = this.repository.findAll()
+        logger.debug("Returning all categories")
+        return categories
+    }
+
     @Transactional
     fun delete(category: Category) {
         logger.debug("Deleting category...")
