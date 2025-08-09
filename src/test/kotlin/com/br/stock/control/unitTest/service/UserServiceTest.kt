@@ -15,6 +15,7 @@ import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
+import org.assertj.core.api.Assertions.assertThat
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -36,9 +37,9 @@ class UserServiceTest {
         email = "testuser@example.com",
         passwordHash = "12345678",
         fullName = "test_username",
-        accountNonExpired = true,
-        credentialsNonExpired = true,
-        accountNonLocked = true,
+        accountNonExpired = false,
+        credentialsNonExpired = false,
+        accountNonLocked = false,
         lastLoginAt = LocalDateTime.now(),
         version = 0,
         createdAt = LocalDateTime.now(),
@@ -237,6 +238,48 @@ class UserServiceTest {
         assertTrue(result.isEmpty, "User is not null")
 
         verify(userRepository, times(1)).findByRefreshToken(refreshToken)
+        verifyNoMoreInteractions(userRepository)
+    }
+
+    @Test
+    fun `should change status accountNonExpired`() {
+        val userCopy = user.copy(accountNonExpired = true)
+        whenever(userRepository.save(user)).thenReturn(userCopy)
+
+        val result: User = this.userService.changeStatusAccountNonExpired(user);
+
+        assertThat(result).isNotNull
+        assertThat(result.accountNonExpired).isEqualTo(user.accountNonExpired)
+
+        verify(userRepository, times(1)).save(user)
+        verifyNoMoreInteractions(userRepository)
+    }
+
+    @Test
+    fun `should change status accountNonLocked`() {
+        val userCopy = user.copy(accountNonLocked = true)
+        whenever(userRepository.save(user)).thenReturn(userCopy)
+
+        val result: User = this.userService.changeStatusAccountNonLocked(user)
+
+        assertThat(result).isNotNull
+        assertThat(result.accountNonLocked).isEqualTo(user.accountNonLocked)
+
+        verify(userRepository, times(1)).save(user)
+        verifyNoMoreInteractions(userRepository)
+    }
+
+    @Test
+    fun `should change status credentialsNonExpired`() {
+        val userCopy = user.copy(credentialsNonExpired = true)
+        whenever(userRepository.save(user)).thenReturn(userCopy)
+
+        val result: User = this.userService.changeStatusCredentialsNonExpired(user)
+
+        assertThat(result).isNotNull
+        assertThat(result.credentialsNonExpired).isEqualTo(user.credentialsNonExpired)
+
+        verify(userRepository, times(1)).save(user)
         verifyNoMoreInteractions(userRepository)
     }
 
