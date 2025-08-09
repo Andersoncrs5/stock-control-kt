@@ -15,8 +15,7 @@ class WareHouseService(
     private val repository: WarehouseRepository,
 
 ) {
-
-    private val logger = LoggerFactory.getLogger(ProductService::class.java)
+    private val logger = LoggerFactory.getLogger(WareHouseService::class.java)
 
     @Transactional(readOnly = true)
     fun getWareHouse(id: String): Warehouse? {
@@ -62,6 +61,23 @@ class WareHouseService(
         return wares
     }
 
+    @Transactional
+    fun changeStatusIsActive(ware: Warehouse): Warehouse {
+        logger.debug("changing status active....")
+        ware.isActive = !ware.isActive
+        val save = this.repository.save(ware)
+        logger.debug("Status changed")
+        return save
+    }
+
+    @Transactional
+    fun changeStatusCanToAdd(ware: Warehouse): Warehouse {
+        logger.debug("changing status canToAdd....")
+        ware.canToAdd = !ware.canToAdd
+        val save = this.repository.save(ware)
+        logger.debug("CanToAdd changed")
+        return save
+    }
 
 
 }
