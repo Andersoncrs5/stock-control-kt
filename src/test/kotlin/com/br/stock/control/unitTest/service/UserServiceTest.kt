@@ -11,9 +11,9 @@ import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -59,23 +59,24 @@ class UserServiceTest {
 
     @Test
     fun `should get user`() {
-        val userId = UUID.randomUUID().toString()
-        val userCopy = user.copy(id = userId)
+        val userCopy = user.copy(id = UUID.randomUUID().toString())
 
-        `when`(userRepository.findById(userId)).thenReturn(Optional.of(userCopy))
+        whenever(userRepository.findById(userCopy.id)).thenReturn(Optional.of(userCopy))
 
-        val result = userService.get(userId)
+        val result = userService.get(userCopy.id)
 
         assertNotNull(result, "User is null")
-        assertEquals(userId, result.id)
-        verify(userRepository, times(1)).findById(userId)
+        assertEquals(userCopy.id, result.id)
+
+        verify(userRepository, times(1)).findById(userCopy.id)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should save user`() {
         val userCopy = user.copy(id = "")
 
-        `when`(userRepository.save(any())).thenReturn(user)
+        whenever(userRepository.save(any())).thenReturn(user)
 
         val result = userService.saveUser(userCopy)
 
@@ -83,16 +84,18 @@ class UserServiceTest {
         assertEquals(result.name, user.name)
 
         verify(userRepository, times(1)).save(any())
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should delete user`() {
         val userCopy = user.copy()
-        doNothing().`when`(userRepository).delete(userCopy)
+        doNothing().whenever(userRepository).delete(userCopy)
 
         this.userService.deleteUser(userCopy)
 
         verify(userRepository, times(1)).delete(userCopy)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
@@ -101,7 +104,7 @@ class UserServiceTest {
         val userBefore = user.copy(id = userId, name = "update")
         val userAfter = user.copy(id = userId, name = "update")
 
-        `when`(userRepository.save<User>(userBefore)).thenReturn(userAfter)
+        whenever(userRepository.save<User>(userBefore)).thenReturn(userAfter)
 
         val result = userService.updateUser(userAfter)
 
@@ -110,60 +113,61 @@ class UserServiceTest {
         assertEquals(result.name, userAfter.name, "Name are different")
 
         verify(userRepository, times(1)).save(userBefore)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return null`() {
-        `when`(userRepository.findById(any())).thenReturn(Optional.empty())
+        whenever(userRepository.findById(any())).thenReturn(Optional.empty())
 
         val result = userService.get(UUID.randomUUID().toString())
 
-        assertNull(result)
+        assertNull(result, "User is not null")
+
+        verify(userRepository, times(1)).findById(any())
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
-    fun `should delete many products`() {
-        val ids = listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-        )
+    fun `should delete many users`() {
+        val ids = List(5) { UUID.randomUUID().toString() }
 
-        doNothing().`when`(userRepository).deleteAllById(ids)
+        doNothing().whenever(userRepository).deleteAllById(ids)
 
         this.userService.deleteMany(ids)
 
         verify(userRepository, times(1)).deleteAllById(ids)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return true`() {
-        `when`(userRepository.existsByEmail(anyString())).thenReturn(true)
+        whenever(userRepository.existsByEmail(anyString())).thenReturn(true)
 
         val existsByEmail: Boolean = this.userService.existsByEmail("")
 
         assertTrue(existsByEmail, "The result is false")
 
         verify(userRepository, times(1)).existsByEmail(anyString())
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return false`() {
-        `when`(userRepository.existsByEmail(anyString())).thenReturn(false)
+        whenever(userRepository.existsByEmail(anyString())).thenReturn(false)
 
         val existsByEmail: Boolean = this.userService.existsByEmail("")
 
         assertFalse { existsByEmail }
 
         verify(userRepository, times(1)).existsByEmail(anyString())
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should get user by name`() {
         val userCopy = this.user.copy()
-        `when`(userRepository.findByName(user.name)).thenReturn(userCopy)
+        whenever(userRepository.findByName(user.name)).thenReturn(userCopy)
 
         val result = this.userService.getUserByName(user.name)
 
@@ -172,22 +176,24 @@ class UserServiceTest {
         assertEquals(userCopy.name, result.name, "Names are different")
 
         verify(userRepository, times(1)).findByName(user.name)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should get user by name return null`() {
-        `when`(userRepository.findByName(user.name)).thenReturn(null)
+        whenever(userRepository.findByName(user.name)).thenReturn(null)
 
         val result = this.userService.getUserByName(user.name)
 
         assertNull(result, "User is not null")
 
         verify(userRepository, times(1)).findByName(user.name)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return true in get user by name`() {
-        `when`(userRepository.existsByName(anyString())).thenReturn(true)
+        whenever(userRepository.existsByName(anyString())).thenReturn(true)
 
         val exists: Boolean = this.userService.existsByName("")
 
@@ -198,37 +204,40 @@ class UserServiceTest {
 
     @Test
     fun `should return false in get user by name`() {
-        `when`(userRepository.existsByName(anyString())).thenReturn(false)
+        whenever(userRepository.existsByName(anyString())).thenReturn(false)
 
         val exists: Boolean = this.userService.existsByName("")
 
         assertFalse { exists }
 
         verify(userRepository, times(1)).existsByName(anyString())
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return user`() {
         val refreshToken = user.refreshToken as String
-        `when`(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of<User>(this.user))
+        whenever(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.of<User>(this.user))
 
         val result = this.userService.getUserByRefreshToken(refreshToken)
 
         assertTrue(result.isPresent, "User is null")
 
         verify(userRepository, times(1)).findByRefreshToken(refreshToken)
+        verifyNoMoreInteractions(userRepository)
     }
 
     @Test
     fun `should return null where search user by refresh token`() {
         val refreshToken = user.refreshToken as String
-        `when`(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.empty())
+        whenever(userRepository.findByRefreshToken(refreshToken)).thenReturn(Optional.empty())
 
         val result = this.userService.getUserByRefreshToken(refreshToken)
 
         assertTrue(result.isEmpty, "User is not null")
 
         verify(userRepository, times(1)).findByRefreshToken(refreshToken)
+        verifyNoMoreInteractions(userRepository)
     }
 
 }

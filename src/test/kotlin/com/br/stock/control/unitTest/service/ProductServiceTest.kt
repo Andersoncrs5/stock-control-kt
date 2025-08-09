@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import org.junit.jupiter.api.*
 import org.mockito.Mockito.*
+import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import java.util.Optional
@@ -50,7 +51,7 @@ class ProductServiceTest {
 
     @Test
     fun `should getProduct`() {
-        `when`(productRepository.findById(product.id)).thenReturn(Optional.of<Product>(product))
+        whenever(productRepository.findById(product.id)).thenReturn(Optional.of<Product>(product))
 
         val result = productService.getProduct(product.id);
 
@@ -59,31 +60,34 @@ class ProductServiceTest {
         assertEquals(result.name, product.name, "Names of products are different")
 
         verify(productRepository, times(1)).findById(product.id)
+        verifyNoMoreInteractions(productRepository)
     }
 
     @Test
     fun `should return null in getProduct`() {
-        `when`(productRepository.findById("1")).thenReturn(Optional.empty())
+        whenever(productRepository.findById("1")).thenReturn(Optional.empty())
 
         val result = productService.getProduct("1")
 
         assertNull(result, "Result of productService getProduct not came null")
 
         verify(productRepository, times(1)).findById("1")
+        verifyNoMoreInteractions(productRepository)
     }
 
     @Test
     fun `should delete product`() {
-        doNothing().`when`(productRepository).delete(product)
+        doNothing().whenever(productRepository).delete(product)
 
         productService.deleteProduct(product)
         verify(productRepository, times(1)).delete(product)
+        verifyNoMoreInteractions(productRepository)
     }
 
     @Test
     fun `should save Product`() {
         val productAfter: Product = product.copy(id = UUID.randomUUID().toString())
-        `when`(productRepository.save(productAfter)).thenReturn(productAfter)
+        whenever(productRepository.save(productAfter)).thenReturn(productAfter)
 
         val result = productService.save(productAfter)
 
@@ -92,17 +96,12 @@ class ProductServiceTest {
         assertEquals(result.name, productAfter.name, "Names of products are different")
 
         verify(productRepository, times(1)).save(productAfter)
+        verifyNoMoreInteractions(productRepository)
     }
 
     @Test
     fun `should return paged list of products with filters`() {
-        val productList: List<Product> = listOf(
-            product.copy(id = UUID.randomUUID().toString()),
-            product.copy(id = UUID.randomUUID().toString()),
-            product.copy(id = UUID.randomUUID().toString()),
-            product.copy(id = UUID.randomUUID().toString()),
-            product.copy(id = UUID.randomUUID().toString()),
-        )
+        val productList: List<Product> = List(10) { product.copy(id = UUID.randomUUID().toString()) }
 
         val name = "Product"
         val min = BigDecimal("5.00")
@@ -112,7 +111,7 @@ class ProductServiceTest {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val page = PageImpl(productList, pageable, productList.size.toLong())
 
-        `when`(
+        whenever(
             productRepository.findWithFilters(name, min, max, pageable)
         ).thenReturn(page)
 
@@ -120,27 +119,23 @@ class ProductServiceTest {
         val result = productService.findAll(name, min, max, pageNumber, pageSize)
 
 
-        Assertions.assertEquals(5, result.content.size)
+        Assertions.assertEquals(10, result.content.size)
         Assertions.assertEquals(product.name, result.content[0].name)
         Assertions.assertEquals(product.name, result.content[1].name)
         verify(productRepository, times(1)).findWithFilters(name, min, max, pageable)
+        verifyNoMoreInteractions(productRepository)
     }
 
     @Test
     fun `should delete many products`() {
-        val ids = listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-        )
+        val ids = List(10) { UUID.randomUUID().toString() }
 
-        doNothing().`when`(productRepository).deleteAllById(ids)
+        doNothing().whenever(productRepository).deleteAllById(ids)
 
         this.productService.deleteMany(ids)
 
         verify(productRepository, times(1)).deleteAllById(ids)
+        verifyNoMoreInteractions(productRepository)
     }
 
 }
