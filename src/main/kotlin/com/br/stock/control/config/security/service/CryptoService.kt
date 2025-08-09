@@ -23,4 +23,10 @@ class CryptoService(
         logger.debug("Password checked! Returning the result")
         return matches
     }
+
+    fun checkUpdateEncoder(password: String): Boolean {
+        logger.debug("Checking if password updated")
+        val encode = this.passwordEncoder.upgradeEncoding(password)
+        return encode
+    }
 }
