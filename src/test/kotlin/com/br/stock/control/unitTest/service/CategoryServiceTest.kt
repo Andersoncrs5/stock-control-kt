@@ -3,6 +3,7 @@ package com.br.stock.control.unitTest.service
 import com.br.stock.control.model.entity.Category
 import com.br.stock.control.repository.CategoryRepository
 import com.br.stock.control.service.CategoryService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -12,6 +13,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.random.Random
 import org.mockito.Mockito.*
+import org.mockito.kotlin.whenever
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -39,6 +41,7 @@ class CategoryServiceTest {
         assertTrue(result.isPresent, "Category is empty")
 
         verify(repository, times(1)).findById(category.id)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -50,6 +53,7 @@ class CategoryServiceTest {
         assertTrue(result.isEmpty, "Category is present")
 
         verify(repository, times(1)).findById(category.id)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -59,6 +63,7 @@ class CategoryServiceTest {
         this.service.delete(category)
 
         verify(repository, times(1)).delete(category)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -67,22 +72,24 @@ class CategoryServiceTest {
             UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
             UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
         )
-        doNothing().`when`(repository).deleteAllById(ids)
+        doNothing().whenever(repository).deleteAllById(ids)
 
         this.service.deleteMany(ids)
 
         verify(repository, times(1)).deleteAllById(ids)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
     fun `should get category by name`() {
-        `when`(repository.findById(category.name)).thenReturn(Optional.of(category))
+        whenever(repository.findById(category.name)).thenReturn(Optional.of(category))
 
         val result: Optional<Category> = this.service.get(category.name)
 
         assertTrue(result.isPresent, "Category is empty")
 
         verify(repository, times(1)).findById(category.name)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -94,6 +101,7 @@ class CategoryServiceTest {
         assertTrue(result.isEmpty, "Category is present")
 
         verify(repository, times(1)).findById(category.name)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -109,6 +117,7 @@ class CategoryServiceTest {
         assertEquals(result.id, categoryAfterChange.id,"Category id is different")
 
         verify(repository, times(1)).save(categoryCopy)
+        verifyNoMoreInteractions(repository)
     }
 
     @Test
@@ -121,6 +130,38 @@ class CategoryServiceTest {
         assertEquals(category.name, save.name, "Names are different")
 
         verify(repository, times(1)).save(category)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should get all categories`() {
+        val list = List(8) { category.copy(UUID.randomUUID().toString()) }
+
+        whenever(repository.findAll()).thenReturn(list)
+
+        val result: List<Category> = this.service.getAll()
+
+        assertThat(result)
+            .hasSize(list.size)
+            .containsExactlyInAnyOrderElementsOf(list)
+
+        assertThat(result)
+            .containsExactlyElementsOf(list)
+
+        verify(repository, times(1)).findAll()
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should return empty list in get all`() {
+        whenever(repository.findAll()).thenReturn(emptyList())
+
+        val result = service.getAll()
+
+        assertThat(result).isEmpty()
+
+        verify(repository, times(1)).findAll()
+        verifyNoMoreInteractions(repository)
     }
 
 }
