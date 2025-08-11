@@ -3,8 +3,11 @@ package com.br.stock.control.service
 import com.br.stock.control.model.entity.Category
 import com.br.stock.control.repository.CategoryRepository
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.Optional
 
 @Service
@@ -26,6 +29,16 @@ class CategoryService(
         logger.debug("Getting all categories...")
         val categories: List<Category> = this.repository.findAll()
         logger.debug("Returning all categories")
+        return categories
+    }
+
+    @Transactional(readOnly = true)
+    fun filter(
+        name: String?, description: String?, active: Boolean?,
+        createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageble: Pageable
+    ): Page<Category> {
+        logger.debug("Getting categories filtered")
+        val categories = this.repository.filter(name, description, active, createdAtBefore, createdAtAfter, pageble)
         return categories
     }
 
