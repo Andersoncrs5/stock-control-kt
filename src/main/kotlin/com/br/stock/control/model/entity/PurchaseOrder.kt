@@ -19,7 +19,7 @@ data class PurchaseOrder(
     var deliveryDate: LocalDateTime,
     var status: StatusEnum,
     var totalAmount: BigDecimal,
-    var placedByUser: String,
+    var placedByUserId: String,
     var notes: String,
     @Version
     var version: Long,

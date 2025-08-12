@@ -12,7 +12,7 @@ data class PurchaseOrderItem(
     @Id
     var id: String,
     var purchaseOrder: String,
-    var product: String,
+    var productId: String,
     var quantity: Integer,
     var unitPrice: BigDecimal,
     var subtotal: BigDecimal,

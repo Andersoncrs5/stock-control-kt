@@ -10,13 +10,13 @@ import java.time.LocalDateTime
 data class Stock(
     @Id
     var id: String,
-    var product: String,
-    var address: String,
+    var productId: String,
+    var addressId: String,
     var quantity: Integer,
     var locationName: String,
     var lastMovementAt: LocalDateTime,
     var responsibleUserId: String,
-    var warehouse: String,
+    var warehouseId: String,
     var isActive: Boolean = true,
     @CreatedDate
     var createdAt: LocalDateTime,
