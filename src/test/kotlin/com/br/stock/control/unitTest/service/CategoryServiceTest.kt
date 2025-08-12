@@ -86,7 +86,7 @@ class CategoryServiceTest {
 
         val result: Optional<Category> = this.service.getByName(category.name)
 
-        assertTrue(result.isPresent, "Category is empty")
+        assertThat(result.isPresent).isTrue
 
         verify(repository, times(1)).findById(category.name)
         verifyNoMoreInteractions(repository)
@@ -98,7 +98,7 @@ class CategoryServiceTest {
 
         val result: Optional<Category> = this.service.getByName(category.name)
 
-        assertTrue(result.isEmpty, "Category is present")
+        assertThat(result.isEmpty).isTrue
 
         verify(repository, times(1)).findById(category.name)
         verifyNoMoreInteractions(repository)
