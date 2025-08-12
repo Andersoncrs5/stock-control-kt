@@ -1,7 +1,6 @@
 package com.br.stock.control.model.entity
 
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -20,7 +19,7 @@ data class Product(
     var description: String,
     var sku: String,
     var barcode: String,
-    var category: String,
+    var categoryId: String,
     var unitOfMeasure: UnitOfMeasureEnum,
     var price: BigDecimal,
     var cost: BigDecimal,
