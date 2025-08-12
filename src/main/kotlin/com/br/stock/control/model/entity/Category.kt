@@ -8,14 +8,14 @@ import java.time.LocalDateTime
 
 data class Category(
     @Id
-    var id: String,
-    var name: String,
+    var id: String = "",
+    var name: String = "",
     var description: String?,
     var active: Boolean = true,
     @Version
-    var version: Long,
+    var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDateTime = LocalDateTime.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 )
