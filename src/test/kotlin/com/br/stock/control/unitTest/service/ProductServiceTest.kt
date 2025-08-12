@@ -35,7 +35,7 @@ class ProductServiceTest {
         description = "description product",
         sku = "0123456789",
         barcode = "789578294758027492",
-        category = UUID.randomUUID().toString(),
+        categoryId = UUID.randomUUID().toString(),
         unitOfMeasure = UnitOfMeasureEnum.UNIT,
         price = BigDecimal.valueOf(0.0),
         cost = BigDecimal.valueOf(0.0),
