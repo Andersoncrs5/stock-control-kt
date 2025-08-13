@@ -10,7 +10,7 @@ data class Category(
     @Id
     var id: String = "",
     var name: String = "",
-    var description: String?,
+    var description: String? = "",
     var active: Boolean = true,
     @Version
     var version: Long = 0,
