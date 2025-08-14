@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import java.util.Optional
 import kotlin.test.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 
 @ExtendWith(MockitoExtension::class)
 class ProductServiceTest {
@@ -135,6 +136,59 @@ class ProductServiceTest {
         this.productService.deleteMany(ids)
 
         verify(productRepository, times(1)).deleteAllById(ids)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should return product when get by sku`() {
+        whenever(productRepository.findBySku(product.sku)).thenReturn(Optional.of(product))
+
+        val result: Optional<Product> = productService.getBySku(product.sku)
+
+        assertThat(result.isPresent).isTrue.withFailMessage("Result is empty")
+        assertEquals(result.get().id, product.id, "IDs of products are different")
+        assertEquals(result.get().name, product.name, "Names of products are different")
+        assertThat(result.get().sku).isEqualTo(product.sku).withFailMessage("Skus are different")
+
+        verify(productRepository, times(1)).findBySku(product.sku)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should return null in get product by sku`() {
+        whenever(productRepository.findBySku(product.sku)).thenReturn(Optional.empty())
+
+        val result: Optional<Product> = productService.getBySku(product.sku)
+
+        assertThat(result.isEmpty).isTrue
+
+        verify(productRepository, times(1)).findBySku(product.sku)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should return product when get by barcode`() {
+        whenever(productRepository.findByBarcode(product.barcode)).thenReturn(Optional.of(product))
+
+        val result: Optional<Product> = productService.getByBarcode(product.barcode)
+
+        assertThat(result.isPresent).isTrue.withFailMessage("Result is empty")
+        assertEquals(result.get().id, product.id, "IDs of products are different")
+        assertThat(result.get().barcode).isEqualTo(product.barcode).withFailMessage("barcodes are different")
+
+        verify(productRepository, times(1)).findByBarcode(product.barcode)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should return null in get product by barcode`() {
+        whenever(productRepository.findByBarcode(product.barcode)).thenReturn(Optional.empty())
+
+        val result: Optional<Product> = productService.getByBarcode(product.barcode)
+
+        assertThat(result.isEmpty).isTrue.withFailMessage("Product is present")
+
+        verify(productRepository, times(1)).findByBarcode(product.barcode)
         verifyNoMoreInteractions(productRepository)
     }
 
