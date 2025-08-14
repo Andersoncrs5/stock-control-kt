@@ -5,13 +5,10 @@ import com.br.stock.control.repository.ProductRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
+import java.util.Optional
 
 @Service
 class ProductService(
@@ -43,7 +40,11 @@ class ProductService(
     }
 
     @Transactional(readOnly = true)
-    fun findAll(name: String?, min: BigDecimal?, max: BigDecimal?, pageNumber: Int, pageSize: Int): Page<Product> {
+    fun findAll(
+        name: String?,
+        min: BigDecimal?, max: BigDecimal?,
+        pageNumber: Int, pageSize: Int
+    ): Page<Product> {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val result: Page<Product> = productRepository.findWithFilters(name, min, max, pageable)
         return result
@@ -54,16 +55,6 @@ class ProductService(
         logger.debug("Delete many product by id...")
         this.productRepository.deleteAllById(ids)
         logger.debug("Products deleted")
-    }
-
-    fun mergeProductV2(product: Product, toMerge: Product): Product {
-        Product::class.memberProperties
-            .filterIsInstance<KMutableProperty1<Product, Any?>>()
-            .forEach { prop ->
-                prop.isAccessible = true
-                prop.set(product, prop.get(toMerge))
-            }
-        return product
     }
 
     fun mergeProduct(product: Product, toMerge: Product): Product = product.apply {
@@ -81,5 +72,18 @@ class ProductService(
         locationSpecificStock = toMerge.locationSpecificStock
     }
 
+    @Transactional(readOnly = true)
+    fun getBySku(sku: String): Optional<Product> {
+        logger.debug("Getting product by sku...")
+        val product: Optional<Product> = this.productRepository.findBySku(sku)
+        return product
+    }
+
+    @Transactional(readOnly = true)
+    fun getByBarcode(barcode: String): Optional<Product> {
+        logger.debug("Getting product by barcode...")
+        val product: Optional<Product> = this.productRepository.findByBarcode(barcode)
+        return product
+    }
 
 }
