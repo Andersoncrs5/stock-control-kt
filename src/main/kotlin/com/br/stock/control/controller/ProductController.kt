@@ -68,6 +68,26 @@ class ProductController(
         @Valid @RequestBody dto: CreateProductDTO,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Product>> {
+        val bySku = this.facades.productService.getBySku(dto.sku)
+        if(bySku.isPresent) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Sku ${dto.sku} in use!",
+                    request.requestURI, request.method, null
+                )
+            )
+        }
+
+        val byBarcode = this.facades.productService.getByBarcode(dto.barcode)
+        if(byBarcode.isPresent) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Barcode ${dto.barcode} in use!",
+                    request.requestURI, request.method, null
+                )
+            )
+        }
+
         if (categoryId.isBlank()) {
             logger.debug("Id came null")
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
