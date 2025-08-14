@@ -13,25 +13,25 @@ import java.time.LocalDateTime
 @Document(collection = "products")
 data class Product(
     @Id
-    var id: String,
+    var id: String = "",
     @Indexed(unique = true)
-    var name: String,
-    var description: String,
-    var sku: String,
-    var barcode: String,
-    var categoryId: String,
-    var unitOfMeasure: UnitOfMeasureEnum,
-    var price: BigDecimal,
-    var cost: BigDecimal,
-    var imageUrl: String,
-    var isActive: Boolean,
-    var minStockLevel: Int,
-    var maxStockLevel: Int,
-    var locationSpecificStock: Map<String, Int>,
+    var name: String = "",
+    var description: String = "",
+    var sku: String = "",
+    var barcode: String = "",
+    var categoryId: String = "",
+    var unitOfMeasure: UnitOfMeasureEnum = UnitOfMeasureEnum.UNIT,
+    var price: BigDecimal = BigDecimal.valueOf(0.0),
+    var cost: BigDecimal = BigDecimal.valueOf(0.0),
+    var imageUrl: String? = "",
+    var isActive: Boolean = true,
+    var minStockLevel: Int = 0,
+    var maxStockLevel: Int = 0,
+    var locationSpecificStock: Map<String, Int> = mapOf(),
     @Version
-    var version: Long,
+    var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDateTime = LocalDateTime.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 )
