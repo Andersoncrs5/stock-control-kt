@@ -8,9 +8,9 @@ data class CreateProductDTO(
     var description: String = "",
     var sku: String = "",
     var barcode: String = "",
-    var unitOfMeasure: UnitOfMeasureEnum? = null,
-    var price: BigDecimal? = null,
-    var cost: BigDecimal? = null,
+    var unitOfMeasure: UnitOfMeasureEnum = UnitOfMeasureEnum.UNIT,
+    var price: BigDecimal = BigDecimal.valueOf(0.0),
+    var cost: BigDecimal = BigDecimal.valueOf(0.0),
     var imageUrl: String = "",
     var minStockLevel: Int = 0,
     var maxStockLevel: Int = 0
