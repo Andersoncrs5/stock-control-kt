@@ -4,7 +4,6 @@ import com.br.stock.control.model.dto.category.CreateCategoryDTO
 import com.br.stock.control.model.dto.product.CreateProductDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
-import com.br.stock.control.model.dto.user.UserDTO
 import com.br.stock.control.model.entity.Category
 import com.br.stock.control.model.entity.Product
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
@@ -21,13 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.UUID
 import kotlin.random.Random
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.assertNotNull
 import java.math.BigDecimal
 
 @SpringBootTest
@@ -112,6 +110,37 @@ class ProductControllerTest {
         return body
     }
 
+    fun createProduct(responseTokens: ResponseToken): ResponseBody<Product> {
+        val responseCategory = createCategory(responseTokens.token)
+        val uuid = "${UUID.randomUUID()}"
+        val dto = CreateProductDTO(
+            name = "name product $uuid", description= "description $uuid", sku = uuid,
+            barcode = "${Random.nextLong(100000000)}", unitOfMeasure = UnitOfMeasureEnum.UNIT,
+            price = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            imageUrl= "", minStockLevel = Random.nextInt(100), maxStockLevel = Random.nextInt(100000) + 100
+        )
+
+        val mvcResult: MvcResult = mockMvc.perform(
+            post("$url/${responseCategory.body?.id}")
+                .header("Authorization", "Bearer ${responseTokens.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isCreated).andReturn()
+
+        val response: ResponseBody<Product> = objectMapper.convertValue(
+            mvcResult.response,
+            object : TypeReference<ResponseBody<Product>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Product created")
+        assertThat(response.body?.id).isNotNull
+
+        return response
+    }
+
     @Test
     fun `should create new product`() {
         val responseTokens: ResponseToken = createUserAndLog()
@@ -154,5 +183,25 @@ class ProductControllerTest {
 
     }
 
+    @Test
+    fun `should get product`() {
+        val responseTokens = createUserAndLog()
+        val responseProduct = createProduct(responseTokens)
+
+        val mvcResult: MvcResult = mockMvc.perform(
+            get("$url/${responseProduct.body?.id}")
+                .header("Authorization", "Bearer ${responseTokens.token}")
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val response: ResponseBody<Product> = objectMapper.convertValue(mvcResult.response, object : TypeReference<ResponseBody<Product>>() {})
+
+        assertThat(response.body).isNotNull
+        assertThat(response.message).isEqualTo("Product founded")
+        assertThat(response.body?.id).isEqualTo(responseProduct.body?.id).withFailMessage("Id are different")
+        assertThat(response.body?.sku).isEqualTo(responseProduct.body?.sku).withFailMessage("Id are different")
+        assertThat(response.body?.barcode).isEqualTo(responseProduct.body?.barcode).withFailMessage("Id are different")
+    }
 
 }
