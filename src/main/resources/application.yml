@@ -9,6 +9,11 @@ spring:
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
+      updateApiRateLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
       authSystemApiRateLimiter:
         limitForPeriod: 30
         limitRefreshPeriod: 15s
