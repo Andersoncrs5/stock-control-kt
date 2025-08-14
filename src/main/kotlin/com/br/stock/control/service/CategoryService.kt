@@ -1,5 +1,6 @@
 package com.br.stock.control.service
 
+import com.br.stock.control.model.dto.category.UpdateCategoryDTO
 import com.br.stock.control.model.entity.Category
 import com.br.stock.control.repository.CategoryRepository
 import org.slf4j.LoggerFactory
@@ -79,6 +80,17 @@ class CategoryService(
         logger.debug("Saving category after changed...")
         val save = this.repository.save(category)
         logger.debug("Category saved after changed")
+        return save
+    }
+
+    @Transactional
+    fun update(category: Category, dto: UpdateCategoryDTO): Category {
+        category.name = dto.name
+        category.description = dto.description
+
+        logger.debug("Updating category...")
+        val save = this.repository.save(category)
+        logger.debug("Category updated")
         return save
     }
 
