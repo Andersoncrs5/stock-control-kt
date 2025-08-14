@@ -1,6 +1,7 @@
 package com.br.stock.control.integration.category
 
 import com.br.stock.control.model.dto.category.CreateCategoryDTO
+import com.br.stock.control.model.dto.category.UpdateCategoryDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.entity.Category
@@ -115,6 +116,40 @@ class CategoryControllerTest {
         return objectMapper.readTree(result1.response.contentAsString)
     }
 
+    fun createCategoryAndReturnIdAndToken(): Map<String, String> {
+        val node: JsonNode = createUserAndLog()
+
+        val token: String? = node.get("body")?.get("token")?.asText()
+        assertNotNull(token, "Token came null")
+
+        val nodeCategory = createCategory(token)
+
+        val categoryId: String = nodeCategory.get("body").get("id").asText()
+        assertNotNull(categoryId, "Category id is null")
+        val map: Map<String, String> = mapOf("token" to token, "id" to categoryId)
+        return map
+    }
+
+    fun createCategoryManyAndReturnIdAndToken(amount: Int): Map<String, Any> {
+        val map = mutableMapOf<String, Any>()
+        val ids = mutableListOf<String>()
+
+        val node: JsonNode = createUserAndLog()
+        val token: String? = node.get("body")?.get("token")?.asText()
+        assertNotNull(token, "Token came null")
+
+        for (i in 1..amount) {
+            val nodeCategory = createCategory(token)
+            ids.add(nodeCategory.get("body").get("id").asText())
+        }
+
+        map["token"] = token
+        map["ids"] = ids
+
+        return map
+    }
+
+
     @Test
     fun `should create new category`() {
         val node: JsonNode = createUserAndLog()
@@ -173,6 +208,66 @@ class CategoryControllerTest {
         assertTrue(bodyNode.isArray, "Body is not an array")
 
         assertEquals(5, bodyNode.size(), "Expected 5 categories in response")
+    }
+
+    @Test
+    fun `should delete category`() {
+        val map = createCategoryAndReturnIdAndToken()
+
+        mockMvc.perform(delete(this.url+"/${map["id"]}")
+            .header("Authorization", "Bearer ${map["token"]}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("Category deleted!"))
+            .andExpect(jsonPath("$.body").value(null))
+    }
+
+    @Test
+    fun `should update category`() {
+        val map: Map<String, String> = createCategoryAndReturnIdAndToken()
+        val dto = UpdateCategoryDTO(name = "category update", description = "description updated")
+
+        mockMvc.perform(put(this.url +"/${map["id"]}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(dto))
+            .header("Authorization", "Bearer ${map["token"]}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("Category updated!"))
+            .andExpect(jsonPath("$.body.id").value(map["id"]))
+            .andExpect(jsonPath("$.body.name").value(dto.name))
+            .andExpect(jsonPath("$.body.description").value(dto.description))
+            .andExpect(jsonPath("$.body.active").value(true))
+    }
+
+    @Test
+    fun `should delete many category`() {
+        val map = createCategoryManyAndReturnIdAndToken(20)
+
+        val ids = (map["ids"] as List<String>).joinToString(",")
+        mockMvc.perform(delete("$url/$ids/many")
+            .header("Authorization", "Bearer ${map["token"]}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("Categories deleted!"))
+            .andExpect(jsonPath("$.body").isEmpty)
+
+    }
+
+    @Test
+    fun `should change status category`() {
+        val node: JsonNode = createUserAndLog()
+
+        val token: String? = node.get("body")?.get("token")?.asText()
+        assertNotNull(token, "Token came null")
+
+        val nodeCategory = createCategory(token)
+
+        val categoryId: String = nodeCategory.get("body").get("id").asText()
+        assertNotNull(categoryId, "Category id is null")
+
+        mockMvc.perform(put("$url/$categoryId/status")
+            .header("Authorization", "Bearer $token"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("Category disabled"))
+            .andExpect(jsonPath("$.body.id").value(categoryId))
     }
 
 
