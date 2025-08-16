@@ -17,20 +17,11 @@ class WareHouseCustomRepositoryImpl(
     private val mongoTemplate: MongoTemplate
 ) : WareHouseCustomRepository {
     override fun findWithFilters(
-        name: String?,
-        addressId: String?,
-        description: String?,
-        responsibleUserId: String?,
-        minAmount: Long?,
-        maxAmount: Long?,
-        minCubicMeters: Double?,
-        maxCubicMeters: Double?,
-        type: WareHouseEnum?,
-        isActive: Boolean?,
-        canToAdd: Boolean?,
-        createdAtBefore: LocalDateTime?,
-        createdAtAfter: LocalDateTime?,
-        pageable: Pageable
+        name: String?, addressId: String?, description: String?,
+        responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
+        minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?,
+        isActive: Boolean?, canToAdd: Boolean?, createdAtBefore: LocalDateTime?,
+        createdAtAfter: LocalDateTime?, pageable: Pageable
     ): Page<Warehouse> {
         val criteria = mutableListOf<Criteria>()
 
