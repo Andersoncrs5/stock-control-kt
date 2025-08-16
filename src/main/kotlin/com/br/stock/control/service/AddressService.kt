@@ -63,6 +63,17 @@ class AddressService(
         return original
     }
 
+    fun update(original: Address, toMerge: Address): Address {
+        logger.debug("Updating address")
+        val address = this.save(
+            this.mergeAddress(original, toMerge)
+        )
+
+        logger.debug("Address updated")
+
+        return address
+    }
+
     @Transactional
     fun changeStatusActive(address: Address): Address {
         logger.debug("Change status address active...")
