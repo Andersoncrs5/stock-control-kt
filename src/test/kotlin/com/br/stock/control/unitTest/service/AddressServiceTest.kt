@@ -15,7 +15,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 
@@ -43,8 +43,8 @@ class AddressServiceTest {
         isActive = true,
         type = TypeAddressEnum.USER,
         version = 1,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
+        createdAt = LocalDate.now(),
+        updatedAt = LocalDate.now()
     )
 
     @Test
@@ -115,7 +115,7 @@ class AddressServiceTest {
             neighborhood = "neighborhood 1" + 1, city = "city 1" + 1,
             state = "state 1" + 1, zipCode = "12345678" + 9, country = "country 1" + 1,
             referencePoint = "referencePoint 1" + 1, latitude = 84566.24 + 1.1, longitude = 983578.224 + 1.1, isActive = true,
-            type = TypeAddressEnum.USER, version = this.addressMock.version, createdAt = this.addressMock.createdAt, updatedAt = LocalDateTime.now()
+            type = TypeAddressEnum.USER, version = this.addressMock.version, createdAt = this.addressMock.createdAt, updatedAt = LocalDate.now()
         )
 
         val result = this.service.mergeAddress(this.addressMock, addressToMerge)

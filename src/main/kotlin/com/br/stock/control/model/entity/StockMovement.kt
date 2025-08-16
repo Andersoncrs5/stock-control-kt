@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 data class StockMovement(
     @Id
     var id: String,
-    var product: String,
+    var productId: String,
     var quantity: Integer,
     var movementType: MovementTypeEnum,
     var sourceLocation: String,

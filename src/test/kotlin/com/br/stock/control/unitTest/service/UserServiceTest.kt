@@ -14,7 +14,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import java.util.Optional
 import java.util.UUID
@@ -40,21 +40,20 @@ class UserServiceTest {
         accountNonExpired = false,
         credentialsNonExpired = false,
         accountNonLocked = false,
-        lastLoginAt = LocalDateTime.now(),
+        lastLoginAt = LocalDate.now(),
         version = 0,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now(),
+        createdAt = LocalDate.now(),
+        updatedAt = LocalDate.now(),
         roles = setOf(
             Role(
                 name = "ROLE_USER",
                 id = UUID.randomUUID().toString(),
                 description = "",
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
+                createdAt = LocalDate.now(),
+                updatedAt = LocalDate.now()
             )
         ),
-        addressId = UUID.randomUUID().toString(),
-        contact = Contact(),
+        contact = List(5) { UUID.randomUUID().toString() },
         refreshToken = "${UUID.randomUUID()}-${UUID.randomUUID()}"
     )
 

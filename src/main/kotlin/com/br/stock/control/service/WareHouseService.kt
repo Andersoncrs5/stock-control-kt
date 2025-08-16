@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Service
 class WareHouseService(
@@ -53,7 +53,7 @@ class WareHouseService(
     fun filter(
         name: String?, addressId: String?, description: String?, responsibleUserId: String?, minAmount: Long?,
         maxAmount: Long?, minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?, isActive: Boolean?,
-        canToAdd: Boolean?, createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageable: Pageable
+        canToAdd: Boolean?, createdAtBefore: LocalDate?, createdAtAfter: LocalDate?, pageable: Pageable
     ): Page<Warehouse> {
         logger.debug("Searching warehouses....")
         val wares: Page<Warehouse> = this.repository.findWithFilters( name, addressId,description,responsibleUserId, minAmount, maxAmount,minCubicMeters, maxCubicMeters,type,isActive,canToAdd,createdAtBefore,createdAtAfter, pageable)
@@ -84,7 +84,6 @@ class WareHouseService(
         logger.debug("Updating warehouse")
         ware.name = dto.name
         ware.description = dto.description
-        ware.addressId = dto.addressId
         ware.responsibleUserId = dto.responsibleUserId
         ware.amount = dto.amount
         ware.capacityCubicMeters = dto.capacityCubicMeters

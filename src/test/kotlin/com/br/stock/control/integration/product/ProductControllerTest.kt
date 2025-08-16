@@ -80,10 +80,8 @@ class ProductControllerTest {
             .andExpect(status().isOk)
             .andReturn()
 
-        val readTree: JsonNode = objectMapper.readTree(result.response.contentAsString)
-
         val response: ResponseBody<ResponseToken> = objectMapper.convertValue(
-            readTree,
+            objectMapper.readTree(result.response.contentAsString),
             object : TypeReference<ResponseBody<ResponseToken>>() {}
         )
 

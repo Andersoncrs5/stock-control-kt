@@ -11,9 +11,8 @@ import org.mockito.Mock
 import org.junit.jupiter.api.*
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -28,7 +27,6 @@ class WareHouseServiceTest {
         id = UUID.randomUUID().toString(),
         name = "ware house 1",
         description = "ware house 1 description",
-        addressId = UUID.randomUUID().toString(),
         responsibleUserId = UUID.randomUUID().toString(),
         amount = 10,
         capacityCubicMeters = 100.0,
@@ -36,8 +34,8 @@ class WareHouseServiceTest {
         isActive = true,
         canToAdd = true,
         version = 0,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
+        createdAt = LocalDate.now(),
+        updatedAt = LocalDate.now()
     )
 
     @Test

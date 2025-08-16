@@ -3,13 +3,11 @@ package com.br.stock.control.service
 import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.UserRepository
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.Optional
 
-@Slf4j
 @Service
 class UserService(
     private val repository: UserRepository
