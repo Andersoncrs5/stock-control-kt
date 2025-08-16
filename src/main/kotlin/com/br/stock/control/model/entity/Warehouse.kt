@@ -12,15 +12,15 @@ import java.time.LocalDateTime
 @Document(collection = "warehouses")
 data class Warehouse(
     @Id
-    var id: String,
+    var id: String = "",
     @Indexed(unique = true)
-    var name: String,
-    var description: String? = null,
-    var addressId: String,
-    var responsibleUserId: String,
-    var amount: Long,
-    var capacityCubicMeters: Double,
-    var type: WareHouseEnum,
+    var name: String = "",
+    var description: String = "",
+    var addressId: String = "",
+    var responsibleUserId: String = "",
+    var amount: Long = 0L,
+    var capacityCubicMeters: Double = 0.0,
+    var type: WareHouseEnum = WareHouseEnum.NONE,
     var isActive: Boolean = true,
     var canToAdd: Boolean = true,
     @Version
