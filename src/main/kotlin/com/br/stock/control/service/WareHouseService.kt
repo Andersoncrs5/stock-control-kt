@@ -1,5 +1,6 @@
 package com.br.stock.control.service
 
+import com.br.stock.control.model.dto.warehouse.UpdateWareDTO
 import com.br.stock.control.model.entity.Warehouse
 import com.br.stock.control.model.enum.WareHouseEnum
 import com.br.stock.control.repository.WarehouseRepository
@@ -13,7 +14,6 @@ import java.time.LocalDateTime
 @Service
 class WareHouseService(
     private val repository: WarehouseRepository,
-
 ) {
     private val logger = LoggerFactory.getLogger(WareHouseService::class.java)
 
@@ -51,11 +51,9 @@ class WareHouseService(
 
     @Transactional(readOnly = true)
     fun filter(
-        name: String?, addressId: String?, description: String?,
-        responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
-        minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?,
-        isActive: Boolean?, canToAdd: Boolean?, createdAtBefore: LocalDateTime?,
-        createdAtAfter: LocalDateTime?, pageable: Pageable
+        name: String?, addressId: String?, description: String?, responsibleUserId: String?, minAmount: Long?,
+        maxAmount: Long?, minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?, isActive: Boolean?,
+        canToAdd: Boolean?, createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageable: Pageable
     ): Page<Warehouse> {
         logger.debug("Searching warehouses....")
         val wares: Page<Warehouse> = this.repository.findWithFilters( name, addressId,description,responsibleUserId, minAmount, maxAmount,minCubicMeters, maxCubicMeters,type,isActive,canToAdd,createdAtBefore,createdAtAfter, pageable)
@@ -81,5 +79,20 @@ class WareHouseService(
         return save
     }
 
+    @Transactional
+    fun update(ware: Warehouse, dto: UpdateWareDTO): Warehouse {
+        logger.debug("Updating warehouse")
+        ware.name = dto.name
+        ware.description = dto.description
+        ware.addressId = dto.addressId
+        ware.responsibleUserId = dto.responsibleUserId
+        ware.amount = dto.amount
+        ware.capacityCubicMeters = dto.capacityCubicMeters
+        ware.type = dto.type
+
+        val save = this.repository.save(ware)
+        logger.debug("Warehouse updated")
+        return save
+    }
 
 }
