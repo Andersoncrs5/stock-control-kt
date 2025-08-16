@@ -1,6 +1,7 @@
 package com.br.stock.control.util.filters.products
 
 import com.br.stock.control.model.entity.Product
+import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -16,14 +17,41 @@ class ProductCustomRepositoryImpl(
 ): ProductCustomRepository {
     override fun findWithFilters(
         name: String?,
+        sku: String?,
+        barcode: String?,
+        categoryId: String?,
+        unitOfMeasure: UnitOfMeasureEnum?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
+        minCost: BigDecimal?,
+        maxCost: BigDecimal?,
+        isActive: Boolean?,
         pageable: Pageable
     ): Page<Product> {
         val criteria = mutableListOf<Criteria>()
 
+        unitOfMeasure?.let {
+            criteria.add(Criteria.where("unitOfMeasure").`is`(it))
+        }
+
+        isActive?.let {
+            criteria.add(Criteria.where("isActive").`is`(it))
+        }
+
         name?.let {
             criteria.add(Criteria.where("name").regex(".*$it.*", "i"))
+        }
+
+        sku?.let {
+            criteria.add(Criteria.where("sku").regex(".*$it.*", "i"))
+        }
+
+        categoryId?.let {
+            criteria.add(Criteria.where("categoryId").regex(".*$it.*", "i"))
+        }
+
+        barcode?.let {
+            criteria.add(Criteria.where("barcode").regex(".*$it.*", "i"))
         }
 
         minPrice?.let {
@@ -32,6 +60,14 @@ class ProductCustomRepositoryImpl(
 
         maxPrice?.let {
             criteria.add(Criteria.where("price").lte(it))
+        }
+
+        minCost?.let {
+            criteria.add(Criteria.where("cost").gte(it))
+        }
+
+        maxCost?.let {
+            criteria.add(Criteria.where("cost").lte(it))
         }
 
         val query = Query().apply {
