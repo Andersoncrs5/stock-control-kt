@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "suppliers")
 data class Supplier(
@@ -17,7 +17,7 @@ data class Supplier(
     @Version
     var version: Long,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

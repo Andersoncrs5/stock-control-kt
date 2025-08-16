@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 data class PurchaseOrderItem(
     @Id
@@ -20,7 +20,7 @@ data class PurchaseOrderItem(
     @Version
     var version: Long,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

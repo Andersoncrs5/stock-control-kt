@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "stock_movements")
 data class StockMovement(
@@ -17,7 +17,7 @@ data class StockMovement(
     var movementType: MovementTypeEnum,
     var sourceLocation: String,
     var destinationLocation: String,
-    var movementDate: LocalDateTime,
+    var movementDate: LocalDate,
     var moveByUserId: String,
     var senderByUserId: String,
     var reason: String,
@@ -26,7 +26,7 @@ data class StockMovement(
     @Version
     var version: Long,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

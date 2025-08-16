@@ -4,7 +4,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "stocks")
 data class Stock(
@@ -14,12 +14,12 @@ data class Stock(
     var addressId: String,
     var quantity: Integer,
     var locationName: String,
-    var lastMovementAt: LocalDateTime,
+    var lastMovementAt: LocalDate,
     var responsibleUserId: String,
     var warehouseId: String,
     var isActive: Boolean = true,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

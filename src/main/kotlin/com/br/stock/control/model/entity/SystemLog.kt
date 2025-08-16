@@ -8,13 +8,13 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "logs")
 data class SystemLog(
     @Id
     var id: String,
-    var timestamp: LocalDateTime,
+    var timestamp: LocalDate,
     var level: LevelEnum,
     var message: String,
     var eventType: EventTypeEnum,
@@ -26,7 +26,7 @@ data class SystemLog(
     @Version
     var version: Long,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )
