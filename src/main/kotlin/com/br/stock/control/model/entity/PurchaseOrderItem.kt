@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 data class PurchaseOrderItem(
     @Id
     var id: String,
-    var purchaseOrder: String,
+    var purchaseOrderId: String,
     var productId: String,
     var quantity: Integer,
     var unitPrice: BigDecimal,

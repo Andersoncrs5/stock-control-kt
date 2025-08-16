@@ -7,16 +7,16 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 data class PurchaseOrder(
     @Id
     var id: String,
     var orderNumber: String,
-    var supplier: String,
-    var orderDate: LocalDateTime,
-    var expectedDeliveryDate: LocalDateTime,
-    var deliveryDate: LocalDateTime,
+    var supplierId: String,
+    var orderDate: LocalDate,
+    var expectedDeliveryDate: LocalDate,
+    var deliveryDate: LocalDate,
     var status: StatusEnum,
     var totalAmount: BigDecimal,
     var placedByUserId: String,
@@ -24,7 +24,7 @@ data class PurchaseOrder(
     @Version
     var version: Long,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

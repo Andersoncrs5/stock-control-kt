@@ -9,8 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
-import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Repository
 class WareHouseCustomRepositoryImpl(
@@ -20,8 +19,8 @@ class WareHouseCustomRepositoryImpl(
         name: String?, addressId: String?, description: String?,
         responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
         minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?,
-        isActive: Boolean?, canToAdd: Boolean?, createdAtBefore: LocalDateTime?,
-        createdAtAfter: LocalDateTime?, pageable: Pageable
+        isActive: Boolean?, canToAdd: Boolean?, createdAtBefore: LocalDate?,
+        createdAtAfter: LocalDate?, pageable: Pageable
     ): Page<Warehouse> {
         val criteria = mutableListOf<Criteria>()
 

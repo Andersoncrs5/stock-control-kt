@@ -5,13 +5,13 @@ import com.br.stock.control.model.enum.WareHouseEnum
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Repository
 interface WareHouseCustomRepository {
     fun findWithFilters(
         name: String?, addressId: String?, description: String?, responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
         minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?, isActive: Boolean?, canToAdd: Boolean?,
-        createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageable: Pageable
+        createdAtBefore: LocalDate?, createdAtAfter: LocalDate?, pageable: Pageable
     ): Page<Warehouse>
 }
