@@ -1,6 +1,8 @@
 package com.br.stock.control.service
 
+import com.br.stock.control.model.dto.product.UpdateProductDTO
 import com.br.stock.control.model.entity.Product
+import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import com.br.stock.control.repository.ProductRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -17,7 +19,7 @@ class ProductService(
     private val logger = LoggerFactory.getLogger(ProductService::class.java)
 
     @Transactional(readOnly = true)
-    fun getProduct(id: String): Product? {
+    fun get(id: String): Product? {
         logger.debug("Getting product in database....")
         val product: Product? = this.productRepository.findById(id).orElse(null)
         logger.debug("Product found! Returning.....")
@@ -25,7 +27,7 @@ class ProductService(
     }
 
     @Transactional
-    fun deleteProduct(product: Product) {
+    fun delete(product: Product) {
         logger.debug("Deleting product....")
         this.productRepository.delete(product)
         logger.debug("Product deleted!")
@@ -41,13 +43,18 @@ class ProductService(
 
     @Transactional(readOnly = true)
     fun findAll(
-        name: String?,
-        min: BigDecimal?, max: BigDecimal?,
-        pageNumber: Int, pageSize: Int
+        name: String?, sku: String?, barcode: String?,
+        categoryId: String?, unitOfMeasure: UnitOfMeasureEnum?,
+        minPrice: BigDecimal?, maxPrice: BigDecimal?,
+        minCost: BigDecimal?, maxCost: BigDecimal?,
+        isActive: Boolean?, pageNumber: Int, pageSize: Int
     ): Page<Product> {
-        val pageable = PageRequest.of(pageNumber, pageSize)
-        val result: Page<Product> = productRepository.findWithFilters(name, min, max, pageable)
-        return result
+        val pageable: PageRequest = PageRequest.of(pageNumber, pageSize)
+        return productRepository.findWithFilters(
+            name, sku, barcode, categoryId, unitOfMeasure,
+            minPrice, maxPrice, minCost, maxCost,
+            isActive, pageable
+        )
     }
 
     @Transactional
@@ -57,19 +64,23 @@ class ProductService(
         logger.debug("Products deleted")
     }
 
-    fun mergeProduct(product: Product, toMerge: Product): Product = product.apply {
-        name = toMerge.name
-        description = toMerge.description
-        sku = toMerge.sku
-        barcode = toMerge.barcode
-        unitOfMeasure = toMerge.unitOfMeasure
-        price = toMerge.price
-        cost = toMerge.cost
-        imageUrl = toMerge.imageUrl
-        isActive = toMerge.isActive
-        minStockLevel = toMerge.minStockLevel
-        maxStockLevel = toMerge.maxStockLevel
-        locationSpecificStock = toMerge.locationSpecificStock
+    fun update(product: Product, toMerge: UpdateProductDTO): Product  {
+        logger.debug("Updating product")
+        product.name = toMerge.name
+        product.description = toMerge.description
+        product.sku = toMerge.sku
+        product.barcode = toMerge.barcode
+        product.unitOfMeasure = toMerge.unitOfMeasure
+        product.price = toMerge.price
+        product.cost = toMerge.cost
+        product.imageUrl = toMerge.imageUrl
+        product.minStockLevel = toMerge.minStockLevel
+        product.maxStockLevel = toMerge.maxStockLevel
+        product.locationSpecificStock = toMerge.locationSpecificStock
+
+        val save = this.productRepository.save(product)
+        logger.debug("Product updated")
+        return save
     }
 
     @Transactional(readOnly = true)
@@ -84,6 +95,14 @@ class ProductService(
         logger.debug("Getting product by barcode...")
         val product: Optional<Product> = this.productRepository.findByBarcode(barcode)
         return product
+    }
+
+    @Transactional
+    fun changeStatus(product: Product): Product {
+        logger.debug("Changing status product")
+        product.isActive = !product.isActive
+
+        return this.productRepository.save(product)
     }
 
 }
