@@ -7,6 +7,6 @@ data class ResponseBody<T>(
     val message: String?,
     val path: String?,
     val method: String?,
-    val body: T?
+    val body: T
 ) {
 }
