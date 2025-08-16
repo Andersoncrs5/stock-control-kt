@@ -54,7 +54,7 @@ class ProductServiceTest {
     fun `should getProduct`() {
         whenever(productRepository.findById(product.id)).thenReturn(Optional.of<Product>(product))
 
-        val result = productService.getProduct(product.id);
+        val result = productService.get(product.id);
 
         assertNotNull(result, "Result of productService getProduct came null")
         assertEquals(result.id, product.id, "IDs of products are different")
@@ -68,7 +68,7 @@ class ProductServiceTest {
     fun `should return null in getProduct`() {
         whenever(productRepository.findById("1")).thenReturn(Optional.empty())
 
-        val result = productService.getProduct("1")
+        val result = productService.get("1")
 
         assertNull(result, "Result of productService getProduct not came null")
 
@@ -80,7 +80,7 @@ class ProductServiceTest {
     fun `should delete product`() {
         doNothing().whenever(productRepository).delete(product)
 
-        productService.deleteProduct(product)
+        productService.delete(product)
         verify(productRepository, times(1)).delete(product)
         verifyNoMoreInteractions(productRepository)
     }
@@ -101,29 +101,36 @@ class ProductServiceTest {
     }
 
     @Test
-    fun `should return paged list of products with filters`() {
-        val productList: List<Product> = List(10) { product.copy(id = UUID.randomUUID().toString()) }
-
-        val name = "Product"
-        val min = BigDecimal("5.00")
-        val max = BigDecimal("30.00")
-        val pageNumber = 0
-        val pageSize = 2
-        val pageable = PageRequest.of(pageNumber, pageSize)
+    fun `should return paged list of products with advanced filters`() {
+        val productList: List<Product> = List(5) { product.copy(id = UUID.randomUUID().toString()) }
+        val pageable = PageRequest.of(0, 5)
         val page = PageImpl(productList, pageable, productList.size.toLong())
 
         whenever(
-            productRepository.findWithFilters(name, min, max, pageable)
+            productRepository.findWithFilters(
+                "Prod", "SKU", "BARCODE",
+                "CAT123", UnitOfMeasureEnum.UNIT,
+                BigDecimal("10.00"), BigDecimal("50.00"),
+                BigDecimal("5.00"), BigDecimal("25.00"),
+                true, pageable
+            )
         ).thenReturn(page)
 
+        val result = productService.findAll(
+            "Prod", "SKU", "BARCODE", "CAT123", UnitOfMeasureEnum.UNIT,
+            BigDecimal("10.00"), BigDecimal("50.00"),
+            BigDecimal("5.00"), BigDecimal("25.00"),
+            true, 0, 5
+        )
 
-        val result = productService.findAll(name, min, max, pageNumber, pageSize)
-
-
-        Assertions.assertEquals(10, result.content.size)
-        Assertions.assertEquals(product.name, result.content[0].name)
-        Assertions.assertEquals(product.name, result.content[1].name)
-        verify(productRepository, times(1)).findWithFilters(name, min, max, pageable)
+        assertEquals(5, result.content.size)
+        assertEquals(product.name, result.content[0].name)
+        verify(productRepository, times(1)).findWithFilters(
+            "Prod", "SKU", "BARCODE", "CAT123", UnitOfMeasureEnum.UNIT,
+            BigDecimal("10.00"), BigDecimal("50.00"),
+            BigDecimal("5.00"), BigDecimal("25.00"),
+            true, pageable
+        )
         verifyNoMoreInteractions(productRepository)
     }
 
@@ -189,6 +196,38 @@ class ProductServiceTest {
         assertThat(result.isEmpty).isTrue.withFailMessage("Product is present")
 
         verify(productRepository, times(1)).findByBarcode(product.barcode)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should change product status`() {
+        val activeProduct = product.copy(isActive = true)
+        val deactivatedProduct = activeProduct.copy(isActive = false)
+
+        whenever(productRepository.save(activeProduct)).thenReturn(deactivatedProduct)
+
+        val result = productService.changeStatus(activeProduct)
+
+        assertNotNull(result, "Result of productService changeStatus came null")
+        assertEquals(deactivatedProduct.isActive, result.isActive, "Status of product did not change correctly")
+
+        verify(productRepository, times(1)).save(activeProduct)
+        verifyNoMoreInteractions(productRepository)
+    }
+
+    @Test
+    fun `should activate an inactive product`() {
+        val inactiveProduct = product.copy(isActive = false)
+        val activatedProduct = inactiveProduct.copy(isActive = true)
+
+        whenever(productRepository.save(inactiveProduct)).thenReturn(activatedProduct)
+
+        val result = productService.changeStatus(inactiveProduct)
+
+        assertNotNull(result, "Result of productService changeStatus came null")
+        assertEquals(activatedProduct.isActive, result.isActive, "Status of product did not change correctly")
+
+        verify(productRepository, times(1)).save(inactiveProduct)
         verifyNoMoreInteractions(productRepository)
     }
 
