@@ -1,0 +1,87 @@
+spring:
+  application:
+    name: stock.control
+
+  resilience4j.ratelimiter:
+    instances:
+      createApiRateLimiter:
+        limitForPeriod: 30
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
+      updateApiRateLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
+      authSystemApiRateLimiter:
+        limitForPeriod: 30
+        limitRefreshPeriod: 15s
+        timeoutDuration: 0s
+
+      deleteApiRateLimiter:
+        limitForPeriod: 40
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0s
+
+      readApiRateLimiter:
+        limitForPeriod: 50
+        limitRefreshPeriod: 8s
+        timeoutDuration: 0s
+
+      basicApiRateLimiter:
+        limitForPeriod: 40
+        limitRefreshPeriod: 8s
+        timeoutDuration: 0s
+
+      criticalApiRateLimiter:
+        limitForPeriod: 15
+        limitRefreshPeriod: 5s
+        timeoutDuration: 0s
+
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: stock_control_db
+#      username:
+#      password:
+#      authentication-database:
+
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
+  mail:
+    host: smtp.seudominio.com
+    port: 587
+    username: seu_email@seudominio.com
+    password: sua_senha_de_email_ou_app_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    jwt:
+      secret: UmSegredoMuitoLongoeComplexoParaAssinarOJWTQueDeveSerGeradoAleatoriamenteEArmazenadoEmVariaveisDeAmbiente
+      expiration: 86400000
+
+  actuator:
+    enabled: true
+    expose:
+      include: "*"
+
+logging:
+  level:
+    root: INFO
+    org.springframework.data.mongodb.core: DEBUG
+    org.springframework.data.redis: DEBUG
+    com.br.stock.control: DEBUG
+
+server:
+  port: 8080
