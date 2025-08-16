@@ -79,7 +79,6 @@ class UserControllerTest {
             .header("Authorization", "Bearer $token"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.message").value("User founded"))
-
     }
 
     @Test
