@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -269,6 +270,8 @@ class ProductController(
         @RequestParam(required = false) minCost: BigDecimal?,
         @RequestParam(required = false) maxCost: BigDecimal?,
         @RequestParam(required = false) isActive: Boolean?,
+        @RequestParam(required = false) createdAtBefore: LocalDate?,
+        @RequestParam(required = false) createdAtAfter: LocalDate?,
         @RequestParam(defaultValue = "0") pageNumber: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         request: HttpServletRequest
@@ -276,7 +279,7 @@ class ProductController(
 
         val result: Page<Product> = facades.productService.findAll(
             name, sku, barcode, categoryId, unitOfMeasure,
-            minPrice, maxPrice, minCost, maxCost, isActive,
+            minPrice, maxPrice, minCost, maxCost, createdAtBefore, createdAtAfter, isActive,
             pageNumber, pageSize
         )
 

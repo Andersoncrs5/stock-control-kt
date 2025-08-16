@@ -10,7 +10,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.UUID
 import org.junit.jupiter.api.*
 import org.mockito.Mockito.*
@@ -46,8 +46,8 @@ class ProductServiceTest {
         maxStockLevel = 10_000,
         locationSpecificStock = emptyMap(),
         version = 0,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
+        createdAt = LocalDate.now(),
+        updatedAt = LocalDate.now()
     )
 
     @Test
@@ -106,13 +106,16 @@ class ProductServiceTest {
         val pageable = PageRequest.of(0, 5)
         val page = PageImpl(productList, pageable, productList.size.toLong())
 
+        val createdAtBefore = LocalDate.now().plusDays(1)  // pode ser qualquer valor válido
+        val createdAtAfter = LocalDate.now().minusDays(30)
+
         whenever(
             productRepository.findWithFilters(
                 "Prod", "SKU", "BARCODE",
                 "CAT123", UnitOfMeasureEnum.UNIT,
                 BigDecimal("10.00"), BigDecimal("50.00"),
                 BigDecimal("5.00"), BigDecimal("25.00"),
-                true, pageable
+                true, createdAtBefore, createdAtAfter, pageable
             )
         ).thenReturn(page)
 
@@ -120,7 +123,7 @@ class ProductServiceTest {
             "Prod", "SKU", "BARCODE", "CAT123", UnitOfMeasureEnum.UNIT,
             BigDecimal("10.00"), BigDecimal("50.00"),
             BigDecimal("5.00"), BigDecimal("25.00"),
-            true, 0, 5
+            createdAtBefore, createdAtAfter, true, 0, 5
         )
 
         assertEquals(5, result.content.size)
@@ -129,7 +132,7 @@ class ProductServiceTest {
             "Prod", "SKU", "BARCODE", "CAT123", UnitOfMeasureEnum.UNIT,
             BigDecimal("10.00"), BigDecimal("50.00"),
             BigDecimal("5.00"), BigDecimal("25.00"),
-            true, pageable
+            true, createdAtBefore, createdAtAfter, pageable
         )
         verifyNoMoreInteractions(productRepository)
     }

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
+import java.time.LocalDate
 
 @Repository
 class ProductCustomRepositoryImpl(
@@ -26,6 +27,8 @@ class ProductCustomRepositoryImpl(
         minCost: BigDecimal?,
         maxCost: BigDecimal?,
         isActive: Boolean?,
+        createdAtBefore: LocalDate?,
+        createdAtAfter: LocalDate?,
         pageable: Pageable
     ): Page<Product> {
         val criteria = mutableListOf<Criteria>()
@@ -68,6 +71,14 @@ class ProductCustomRepositoryImpl(
 
         maxCost?.let {
             criteria.add(Criteria.where("cost").lte(it))
+        }
+
+        createdAtBefore?.let {
+            criteria.add(Criteria.where("createdAt").lte(it))
+        }
+
+        createdAtAfter?.let {
+            criteria.add(Criteria.where("createdAt").gte(it))
         }
 
         val query = Query().apply {

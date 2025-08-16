@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "products")
 data class Product(
@@ -33,7 +33,7 @@ data class Product(
     @Version
     var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDate = LocalDate.now()
 )

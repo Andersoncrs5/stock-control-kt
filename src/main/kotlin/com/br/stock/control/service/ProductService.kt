@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.Optional
 
 @Service
@@ -47,13 +48,14 @@ class ProductService(
         categoryId: String?, unitOfMeasure: UnitOfMeasureEnum?,
         minPrice: BigDecimal?, maxPrice: BigDecimal?,
         minCost: BigDecimal?, maxCost: BigDecimal?,
+        createdAtBefore: LocalDate?, createdAtAfter: LocalDate?,
         isActive: Boolean?, pageNumber: Int, pageSize: Int
     ): Page<Product> {
         val pageable: PageRequest = PageRequest.of(pageNumber, pageSize)
         return productRepository.findWithFilters(
             name, sku, barcode, categoryId, unitOfMeasure,
             minPrice, maxPrice, minCost, maxCost,
-            isActive, pageable
+            isActive,createdAtBefore,  createdAtAfter, pageable
         )
     }
 
