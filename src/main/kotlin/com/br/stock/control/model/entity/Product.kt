@@ -17,7 +17,9 @@ data class Product(
     @Indexed(unique = true)
     var name: String = "",
     var description: String = "",
+    @Indexed(unique = true)
     var sku: String = "",
+    @Indexed(unique = true)
     var barcode: String = "",
     var categoryId: String = "",
     var unitOfMeasure: UnitOfMeasureEnum = UnitOfMeasureEnum.UNIT,
