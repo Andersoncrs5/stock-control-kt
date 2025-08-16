@@ -1,6 +1,5 @@
 package com.br.stock.control.controller
 
-import com.br.stock.control.model.dto.address.CreateAddressDTO
 import com.br.stock.control.model.entity.Address
 import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
@@ -8,7 +7,6 @@ import com.br.stock.control.util.responses.ResponseBody
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
