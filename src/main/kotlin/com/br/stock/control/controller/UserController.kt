@@ -1,8 +1,11 @@
 package com.br.stock.control.controller
 
+import com.br.stock.control.model.dto.address.CreateAddressDTO
 import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.model.dto.user.UserDTO
+import com.br.stock.control.model.entity.Address
 import com.br.stock.control.model.entity.User
+import com.br.stock.control.model.enum.TypeAddressEnum
 import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
@@ -168,5 +171,41 @@ class UserController(
         )
     }
 
+    @PostMapping("/address")
+    @RateLimiter(name = "createApiRateLimiter")
+    @SecurityRequirement(name = "bearerAuth")
+    fun createAddress(
+        @Valid @RequestBody dto: CreateAddressDTO,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Address?>> {
+        val userId: String = facades.tokenService.extractUserId(request)
+        val user: User? = this.facades.userService.get(userId)
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(),
+                    message = "User not found",
+                    path = request.requestURI,
+                    method = request.method,
+                    body = null
+                )
+            )
+        }
+
+        val address: Address = this.facadeMappers.createAddressMapper.toAddress(dto)
+
+        address.id = user.id
+        address.type = TypeAddressEnum.USER
+
+        val save: Address = this.facades.addressService.save(address)
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ResponseBody(
+                LocalDateTime.now(), "Address user created", request.requestURI,
+                request.method, save
+            )
+        )
+    }
 
 }
