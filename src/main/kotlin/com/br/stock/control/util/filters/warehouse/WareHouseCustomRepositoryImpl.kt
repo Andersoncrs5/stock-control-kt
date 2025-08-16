@@ -18,7 +18,9 @@ class WareHouseCustomRepositoryImpl(
 ) : WareHouseCustomRepository {
     override fun findWithFilters(
         name: String?,
+        addressId: String?,
         description: String?,
+        responsibleUserId: String?,
         minAmount: Long?,
         maxAmount: Long?,
         minCubicMeters: Double?,
@@ -34,6 +36,14 @@ class WareHouseCustomRepositoryImpl(
 
         name?.let {
             criteria.add(Criteria.where("name").regex(".*$it.*", "i"))
+        }
+
+        responsibleUserId?.let {
+            criteria.add(Criteria.where("responsibleUserId").regex(".*$it.*", "i"))
+        }
+
+        addressId?.let {
+            criteria.add(Criteria.where("addressId").regex(".*$it.*", "i"))
         }
 
         description?.let {

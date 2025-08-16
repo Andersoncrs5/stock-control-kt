@@ -51,12 +51,14 @@ class WareHouseService(
 
     @Transactional(readOnly = true)
     fun filter(
-        name: String?, description: String?, minAmount: Long?, maxAmount: Long?,
-        minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?, isActive: Boolean?,
-        canToAdd: Boolean?,createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageable: Pageable
+        name: String?, addressId: String?, description: String?,
+        responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
+        minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?,
+        isActive: Boolean?, canToAdd: Boolean?, createdAtBefore: LocalDateTime?,
+        createdAtAfter: LocalDateTime?, pageable: Pageable
     ): Page<Warehouse> {
         logger.debug("Searching warehouses....")
-        val wares: Page<Warehouse> = this.repository.findWithFilters( name, description,minAmount, maxAmount,minCubicMeters, maxCubicMeters,type,isActive,canToAdd,createdAtBefore,createdAtAfter, pageable);
+        val wares: Page<Warehouse> = this.repository.findWithFilters( name, addressId,description,responsibleUserId, minAmount, maxAmount,minCubicMeters, maxCubicMeters,type,isActive,canToAdd,createdAtBefore,createdAtAfter, pageable)
         logger.debug("Warehouse founded")
         return wares
     }

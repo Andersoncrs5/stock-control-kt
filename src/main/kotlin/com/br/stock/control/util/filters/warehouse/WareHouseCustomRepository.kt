@@ -10,16 +10,8 @@ import java.time.LocalDateTime
 @Repository
 interface WareHouseCustomRepository {
     fun findWithFilters(
-        name: String?,
-        description: String?,
-        minAmount: Long?,
-        maxAmount: Long?,
-        minCubicMeters: Double?,
-        maxCubicMeters: Double?,
-        type: WareHouseEnum?,
-        isActive: Boolean?,
-        canToAdd: Boolean?,
-        createdAtBefore: LocalDateTime?,
-        createdAtAfter: LocalDateTime?,
-        pageable: Pageable): Page<Warehouse>
+        name: String?, addressId: String?, description: String?, responsibleUserId: String?, minAmount: Long?, maxAmount: Long?,
+        minCubicMeters: Double?, maxCubicMeters: Double?, type: WareHouseEnum?, isActive: Boolean?, canToAdd: Boolean?,
+        createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageable: Pageable
+    ): Page<Warehouse>
 }
