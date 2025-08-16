@@ -1,6 +1,5 @@
 package com.br.stock.control.model.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -10,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "users")
 data class User  (
@@ -26,16 +25,15 @@ data class User  (
     var credentialsNonExpired: Boolean = false,
     var accountNonLocked: Boolean = false,
     var roles: Set<Role> = emptySet(),
-    var addressId: String? = null,
-    var contact: Contact? = null,
-    var lastLoginAt: LocalDateTime? = null,
+    var contact: List<String> = listOf(),
+    var lastLoginAt: LocalDate? = null,
     var refreshToken: String? = null,
     @Version
     var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDate = LocalDate.now()
 ): UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {

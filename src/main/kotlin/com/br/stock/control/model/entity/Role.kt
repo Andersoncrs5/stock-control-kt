@@ -5,7 +5,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "roles")
 data class Role(
@@ -14,7 +14,7 @@ data class Role(
     var name: String,
     var description: String?,
     @CreatedDate
-    var createdAt: LocalDateTime,
+    var createdAt: LocalDate,
     @LastModifiedDate
-    var updatedAt: LocalDateTime
+    var updatedAt: LocalDate
 )

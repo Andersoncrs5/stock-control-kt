@@ -7,7 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document(collection = "warehouses")
 data class Warehouse(
@@ -16,7 +16,6 @@ data class Warehouse(
     @Indexed(unique = true)
     var name: String = "",
     var description: String = "",
-    var addressId: String = "",
     var responsibleUserId: String = "",
     var amount: Long = 0L,
     var capacityCubicMeters: Double = 0.0,
@@ -26,7 +25,7 @@ data class Warehouse(
     @Version
     var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDate = LocalDate.now()
 )

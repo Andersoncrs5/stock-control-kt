@@ -6,29 +6,30 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Document(collection = "address")
 data class Address(
     @Id
-    var id: String,
-    var street: String,
-    var number: String? = null,
-    var complement: String? = null,
-    var neighborhood: String,
-    var city: String,
-    var state: String,
-    var zipCode: String,
-    var country: String,
-    var referencePoint: String? = null,
-    var latitude: Double? = null,
-    var longitude: Double? = null,
+    var id: String = "",
+    var street: String = "",
+    var number: String = "",
+    var complement: String = "",
+    var neighborhood: String = "",
+    var city: String = "",
+    var state: String = "",
+    var zipCode: String = "",
+    var country: String = "",
+    var referencePoint: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double= 0.0,
     var isActive: Boolean = true,
-    var type: TypeAddressEnum,
+    var type: TypeAddressEnum = TypeAddressEnum.NONE,
     @Version
     var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDate = LocalDate.now()
 )
