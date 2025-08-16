@@ -4,7 +4,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 data class Category(
     @Id
@@ -15,7 +15,7 @@ data class Category(
     @Version
     var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDate = LocalDate.now()
 )

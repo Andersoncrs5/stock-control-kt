@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 import java.time.Duration
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 
@@ -228,7 +229,7 @@ class CategoryController(
     @SecurityRequirement(name = "bearerAuth")
     fun filter(
         @RequestParam name: String, @RequestParam description: String, @RequestParam active: Boolean,
-        @RequestParam createdAtBefore: LocalDateTime, @RequestParam createdAtAfter: LocalDateTime,
+        @RequestParam createdAtBefore: LocalDate, @RequestParam createdAtAfter: LocalDate,
         @RequestParam(defaultValue = "0") page: Int, @RequestParam(defaultValue = "10") size: Int,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Page<Category>>> {

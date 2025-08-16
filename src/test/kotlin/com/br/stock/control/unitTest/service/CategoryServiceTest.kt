@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
 import org.mockito.Mockito.*
@@ -29,7 +29,7 @@ class CategoryServiceTest {
     val category = Category(
         id = UUID.randomUUID().toString(), name = "category ${Random.nextLong(1000)}",
         description = "Description", version = 0,
-        createdAt = LocalDateTime.now(), updatedAt = LocalDateTime.now()
+        createdAt = LocalDate.now(), updatedAt = LocalDate.now()
     )
 
     @Test

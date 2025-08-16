@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.Optional
 
 @Service
@@ -36,7 +36,7 @@ class CategoryService(
     @Transactional(readOnly = true)
     fun filter(
         name: String?, description: String?, active: Boolean?,
-        createdAtBefore: LocalDateTime?, createdAtAfter: LocalDateTime?, pageble: Pageable
+        createdAtBefore: LocalDate?, createdAtAfter: LocalDate?, pageble: Pageable
     ): Page<Category> {
         logger.debug("Getting categories filtered")
         val categories = this.repository.filter(name, description, active, createdAtBefore, createdAtAfter, pageble)

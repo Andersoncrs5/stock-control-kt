@@ -4,7 +4,6 @@ import com.br.stock.control.model.dto.category.CreateCategoryDTO
 import com.br.stock.control.model.dto.category.UpdateCategoryDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
-import com.br.stock.control.model.entity.Category
 import com.br.stock.control.util.facades.FacadeRepository
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper

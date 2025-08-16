@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Repository
 class CategoryCustomRepositoryImpl(
@@ -18,8 +18,8 @@ class CategoryCustomRepositoryImpl(
         name: String?,
         description: String?,
         active: Boolean?,
-        createdAtBefore: LocalDateTime?,
-        createdAtAfter: LocalDateTime?,
+        createdAtBefore: LocalDate?,
+        createdAtAfter: LocalDate?,
         pageable: Pageable
     ): Page<Category> {
         val criteria = mutableListOf<Criteria>()
