@@ -43,10 +43,10 @@ class CategoryController(
     @GetMapping("/{id}")
     @RateLimiter(name = "readApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun get(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category>> {
+    fun get(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Getting category by id $id")
         if (id.isBlank()) {
-            logger.debug("Id came null")
+            logger.debug("Id came null the get category")
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseBody(
                     LocalDateTime.now(), "Id is required!",
@@ -83,7 +83,7 @@ class CategoryController(
     fun create(
         @Valid @RequestBody dto: CreateCategoryDTO,
         request: HttpServletRequest
-    ): ResponseEntity<ResponseBody<Category>> {
+    ): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Creating new category")
         val category: Category = this.facadesMappers.createCategoryMapper.toCategory(dto)
 
@@ -134,7 +134,7 @@ class CategoryController(
     @DeleteMapping("/{id}")
     @RateLimiter(name = "deleteApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun delete(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String>> {
+    fun delete(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String?>> {
         logger.debug("Deleting category by id $id")
         if (id.isBlank()) {
             logger.debug("Id came null")
@@ -172,7 +172,7 @@ class CategoryController(
     @DeleteMapping("/{ids}/many")
     @RateLimiter(name = "deleteApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun deleteMany(@PathVariable ids: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String>> {
+    fun deleteMany(@PathVariable ids: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String?>> {
         val idList = ids.split(",")
         logger.debug("Deleting many category by id {}", idList)
         this.facade.category.deleteMany(idList)
@@ -190,7 +190,7 @@ class CategoryController(
     @SecurityRequirement(name = "bearerAuth")
     fun update(
         @PathVariable id: String, @Valid @RequestBody dto: UpdateCategoryDTO, request: HttpServletRequest
-    ): ResponseEntity<ResponseBody<Category>> {
+    ): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Updating category by id $id")
         if (id.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -252,7 +252,7 @@ class CategoryController(
     @PutMapping("/{id}/status")
     @RateLimiter(name = "updateApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun changeStatus(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category>> {
+    fun changeStatus(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Getting category by id $id to change status")
 
         if (id.isBlank()) {

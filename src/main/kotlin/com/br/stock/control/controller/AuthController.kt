@@ -29,7 +29,7 @@ class AuthController(
 
     @PostMapping("/register")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun register(@Valid @RequestBody dto: RegisterUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>?> {
+    fun register(@Valid @RequestBody dto: RegisterUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO?>> {
         val existsByEmail = this.facade.userService.existsByEmail(dto.email)
 
         if (existsByEmail) {
@@ -76,7 +76,7 @@ class AuthController(
 
     @PostMapping("/login")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun login(@Valid @RequestBody dto: LoginUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<Any>> {
+    fun login(@Valid @RequestBody dto: LoginUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken?>> {
         val user = this.facade.userService.getUserByName(dto.name)
 
         if (user == null) {
@@ -124,7 +124,7 @@ class AuthController(
 
     @GetMapping("/refresh-token/{refreshToken}")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun refreshToken(@PathVariable refresh: String, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken>?> {
+    fun refreshToken(@PathVariable refresh: String, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken?>> {
         if (refresh.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseBody(

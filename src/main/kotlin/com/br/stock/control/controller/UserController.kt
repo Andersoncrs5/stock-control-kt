@@ -25,13 +25,13 @@ class UserController(
     @GetMapping("me")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
-    fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
+    fun getUser(request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO?>> {
         val userId = facades.tokenService.extractUserId(request)
         val user: User? = this.facades.userService.get(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseBody<UserDTO>(
+                ResponseBody(
                     timestamp = LocalDateTime.now(),
                     message = "User not found",
                     path = request.requestURI,
@@ -44,7 +44,7 @@ class UserController(
         val dto = facadeMappers.userDTOMapper.toDTO(user)
 
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseBody<UserDTO>(
+            ResponseBody(
                 timestamp = LocalDateTime.now(),
                 message = "User founded",
                 path = request.requestURI,
@@ -57,14 +57,14 @@ class UserController(
     @DeleteMapping("delete")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "deleteApiRateLimiter")
-    fun delete(request: HttpServletRequest): ResponseEntity<ResponseBody<User>> {
+    fun delete(request: HttpServletRequest): ResponseEntity<ResponseBody<User?>> {
         val userId: String = facades.tokenService.extractUserId(request)
 
         val user: User? = this.facades.userService.get(userId)
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseBody<User>(
+                ResponseBody(
                     timestamp = LocalDateTime.now(),
                     message = "User not found",
                     path = request.requestURI,
@@ -90,10 +90,10 @@ class UserController(
     @GetMapping("{userId}")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
-    fun getUser(@PathVariable userId: String, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
+    fun getUser(@PathVariable userId: String, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO?>> {
         if (userId.isBlank()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseBody<UserDTO>(
+                ResponseBody(
                     timestamp = LocalDateTime.now(),
                     message = "User id is required", path = request.requestURI,
                     method = request.method,body = null
@@ -105,7 +105,7 @@ class UserController(
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseBody<UserDTO>(
+                ResponseBody(
                     timestamp = LocalDateTime.now(), message = "User not found",
                     path = request.requestURI, method = request.method, body = null
                 )
@@ -115,7 +115,7 @@ class UserController(
         val dto = facadeMappers.userDTOMapper.toDTO(user)
 
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseBody<UserDTO>(
+            ResponseBody(
                 timestamp = LocalDateTime.now(),
                 message = "User founded",
                 path = request.requestURI,
@@ -128,7 +128,7 @@ class UserController(
     @PutMapping
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "readApiRateLimiter")
-    fun update(@Valid @RequestBody dto: UpdateUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO>> {
+    fun update(@Valid @RequestBody dto: UpdateUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO?>> {
         val userId: String = facades.tokenService.extractUserId(request)
         val user: User? = facades.userService.get(userId)
 
