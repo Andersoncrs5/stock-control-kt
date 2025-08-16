@@ -1,11 +1,14 @@
 package com.br.stock.control.integration.warehouse
 
+import com.br.stock.control.model.dto.address.CreateAddressDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.dto.user.UserDTO
 import com.br.stock.control.model.dto.warehouse.CreateWareDTO
 import com.br.stock.control.model.dto.warehouse.UpdateWareDTO
+import com.br.stock.control.model.entity.Address
 import com.br.stock.control.model.entity.Warehouse
+import com.br.stock.control.model.enum.TypeAddressEnum
 import com.br.stock.control.model.enum.WareHouseEnum
 import com.br.stock.control.util.facades.FacadeRepository
 import com.br.stock.control.util.responses.ResponseBody
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -34,14 +38,11 @@ import kotlin.random.nextLong
 @AutoConfigureMockMvc
 class WareHouseControllerTest {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
+    @Autowired private lateinit var mockMvc: MockMvc
 
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    @Autowired private lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    private lateinit var facadeRepository: FacadeRepository
+    @Autowired private lateinit var facadeRepository: FacadeRepository
 
     private val url: String = "/v1/ware"
 
@@ -190,7 +191,6 @@ class WareHouseControllerTest {
         assertThat(response.body!!.id).isNotNull
         assertThat(response.body!!.name).isEqualTo(dto.name)
         assertThat(response.body!!.description).isEqualTo(dto.description)
-        assertThat(response.body!!.addressId).isEqualTo(dto.addressId)
         assertThat(response.body!!.responsibleUserId).isEqualTo(dto.responsibleUserId)
         assertThat(response.body!!.amount).isEqualTo(dto.amount)
         assertThat(response.body!!.capacityCubicMeters).isEqualTo(dto.capacityCubicMeters)
@@ -221,7 +221,6 @@ class WareHouseControllerTest {
         assertThat(response.body!!.id).isEqualTo(responseWareHouse.body?.id)
         assertThat(response.body!!.name).isEqualTo(responseWareHouse.body?.name)
         assertThat(response.body!!.description).isEqualTo(responseWareHouse.body?.description)
-        assertThat(response.body!!.addressId).isEqualTo(responseWareHouse.body?.addressId)
         assertThat(response.body!!.responsibleUserId).isEqualTo(responseWareHouse.body?.responsibleUserId)
         assertThat(response.body!!.amount).isEqualTo(responseWareHouse.body?.amount)
         assertThat(response.body!!.capacityCubicMeters).isEqualTo(responseWareHouse.body?.capacityCubicMeters)
@@ -299,7 +298,6 @@ class WareHouseControllerTest {
         val dto = UpdateWareDTO(
             name = "${response.body?.name} updated",
             description = "${response.body?.description} updated ",
-            addressId = "${response.body?.addressId}",
             responsibleUserId = "${response.body?.responsibleUserId}",
             amount= Random.nextLong(100000) ,
             capacityCubicMeters = response.body?.capacityCubicMeters?.plus(Random.nextDouble(99.99)) ?: Random.nextDouble(9999999.99),
@@ -323,7 +321,6 @@ class WareHouseControllerTest {
         assertThat(responsePut.body!!.id).isEqualTo(responseWareHouse.body?.id)
         assertThat(responsePut.body!!.name).isEqualTo(dto.name)
         assertThat(responsePut.body!!.description).isEqualTo(dto.description)
-        assertThat(responsePut.body!!.addressId).isEqualTo(dto.addressId)
         assertThat(responsePut.body!!.responsibleUserId).isEqualTo(dto.responsibleUserId)
         assertThat(responsePut.body!!.amount).isEqualTo(dto.amount)
         assertThat(responsePut.body!!.capacityCubicMeters).isEqualTo(dto.capacityCubicMeters)
@@ -371,6 +368,57 @@ class WareHouseControllerTest {
         assertThat(response.body).isNotNull.withFailMessage("Response came null")
         assertThat(response.body!!.id).isEqualTo(responseWareHouse.body?.id).withFailMessage("Id are different")
         assertThat(response.body!!.canToAdd).isFalse.withFailMessage("Status can to add is true")
+    }
+
+    @Test
+    fun `should create a address to ware house`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val responseWareHouse: ResponseBody<Warehouse?> = createWareHouse(responseToken)
+
+        val num: Long = Random.nextLong(100000)
+        val dto = CreateAddressDTO(
+            street = "street $num",
+            number = "$num",
+            complement = "complement $num",
+            neighborhood = "neighborhood $num",
+            city = "city $num",
+            state = "state $num",
+            zipCode = "$num",
+            country = "US",
+            referencePoint = "$num",
+            latitude= Random.nextDouble(999999.999),
+            longitude = Random.nextDouble(999999.999),
+            isActive = true
+        )
+
+        val mvcResult = mockMvc.perform(
+            post(this.url + "/${responseWareHouse.body?.id}/address")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+                .header("Authorization", "Bearer ${responseToken.token}"))
+            .andExpect(status().isCreated).andReturn()
+
+        val response: ResponseBody<Address> = objectMapper.convertValue(
+            objectMapper.readTree(mvcResult.response.contentAsString),
+            object : TypeReference<ResponseBody<Address>>() {}
+        )
+
+        assertThat(response.body).isNotNull
+        assertThat(response.message).isEqualTo("Address warehouse created")
+        assertThat(response.body.id).isEqualTo(responseWareHouse.body?.id)
+        assertThat(response.body.street).isEqualTo(dto.street)
+        assertThat(response.body.number).isEqualTo(dto.number)
+        assertThat(response.body.complement).isEqualTo(dto.complement)
+        assertThat(response.body.neighborhood).isEqualTo(dto.neighborhood)
+        assertThat(response.body.city).isEqualTo(dto.city)
+        assertThat(response.body.state).isEqualTo(dto.state)
+        assertThat(response.body.zipCode).isEqualTo(dto.zipCode)
+        assertThat(response.body.country).isEqualTo(dto.country)
+        assertThat(response.body.referencePoint).isEqualTo(dto.referencePoint)
+        assertThat(response.body.latitude).isEqualTo(dto.latitude)
+        assertThat(response.body.longitude).isEqualTo(dto.longitude)
+        assertThat(response.body.isActive).isEqualTo(dto.isActive)
+        assertThat(response.body.type).isEqualTo(TypeAddressEnum.WARE_HOUSE)
     }
 
 }
