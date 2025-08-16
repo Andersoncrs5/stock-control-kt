@@ -1,8 +1,11 @@
 package com.br.stock.control.controller
 
+import com.br.stock.control.model.dto.address.CreateAddressDTO
 import com.br.stock.control.model.dto.warehouse.CreateWareDTO
 import com.br.stock.control.model.dto.warehouse.UpdateWareDTO
+import com.br.stock.control.model.entity.Address
 import com.br.stock.control.model.entity.Warehouse
+import com.br.stock.control.model.enum.TypeAddressEnum
 import com.br.stock.control.model.enum.WareHouseEnum
 import com.br.stock.control.util.facades.FacadeMappers
 import com.br.stock.control.util.facades.FacadeServices
@@ -13,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -50,7 +53,7 @@ class WarehouseController(
             )
         }
 
-        val ware: Warehouse? = this.facadeServices.wareHouseService.getWareHouse(id);
+        val ware: Warehouse? = this.facadeServices.wareHouseService.getWareHouse(id)
         if (ware == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(
@@ -297,8 +300,8 @@ class WarehouseController(
         @RequestParam(required = false) type: WareHouseEnum?,
         @RequestParam(required = false) isActive: Boolean?,
         @RequestParam(required = false) canToAdd: Boolean?,
-        @RequestParam(required = false) createdAtBefore: LocalDateTime?,
-        @RequestParam(required = false) createdAtAfter: LocalDateTime?,
+        @RequestParam(required = false) createdAtBefore: LocalDate?,
+        @RequestParam(required = false) createdAtAfter: LocalDate?,
         @RequestParam(defaultValue = "0") pageNumber: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         request: HttpServletRequest
@@ -323,5 +326,45 @@ class WarehouseController(
         )
     }
 
+    @PostMapping("/{id}/address")
+    @RateLimiter(name = "createApiRateLimiter")
+    @SecurityRequirement(name = "bearerAuth")
+    fun create(
+        @PathVariable id: String,
+        @Valid @RequestBody dto: CreateAddressDTO,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Address?>> {
+        if (id.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Id is required", request.requestURI,
+                    request.method, null
+                )
+            )
+        }
 
+        val ware: Warehouse? = this.facadeServices.wareHouseService.getWareHouse(id)
+        if (ware == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Warehouse not found", request.requestURI,
+                    request.method, null
+                )
+            )
+        }
+
+        val address: Address = this.facadeMappers.createAddressMapper.toAddress(dto)
+
+        address.id = ware.id
+        address.type = TypeAddressEnum.WARE_HOUSE
+
+        val save: Address = this.facadeServices.addressService.save(address)
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ResponseBody(
+                LocalDateTime.now(), "Address warehouse created", request.requestURI,
+                request.method, save
+            )
+        )
+    }
 }
