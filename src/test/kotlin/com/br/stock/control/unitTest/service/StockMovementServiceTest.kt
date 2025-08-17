@@ -13,6 +13,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
 import java.util.Optional
@@ -28,11 +29,13 @@ class StockMovementServiceTest {
         id = UUID.randomUUID().toString(),
         stockId = UUID.randomUUID().toString(),
         productId = UUID.randomUUID().toString(),
-        movementType= MovementTypeEnum.IN,
+        movementType = MovementTypeEnum.IN,
         quantity = Random().nextLong(),
         reason = null,
         responsibleUserId = UUID.randomUUID().toString(),
-        createdAt= LocalDate.now()
+        notes = null,
+        createdAt = LocalDate.now(),
+        version = 0
     )
 
     @Test
@@ -56,6 +59,40 @@ class StockMovementServiceTest {
         assertThat(result.isEmpty).isTrue
 
         verify(repository, times(1)).findById((stockMovement.id) as String )
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should delete stock movement`() {
+        doNothing().whenever(repository).delete(stockMovement)
+
+        this.service.delete(stockMovement)
+
+        verify(repository, times(1)).delete(stockMovement)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should delete many stock movement`() {
+        val ids: List<String> = List(10) { UUID.randomUUID().toString() }
+        doNothing().whenever(repository).deleteAllById(ids)
+
+        this.service.deleteMany(ids)
+
+        verify(repository, times(1)).deleteAllById(ids)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should create a stockMovement`() {
+        val moveCopy: StockMovement = stockMovement.copy(id = null)
+        whenever(repository.save(moveCopy)).thenReturn(stockMovement)
+
+        val result = this.service.create(moveCopy)
+
+        assertThat(result.id).isNotNull
+
+        verify(repository, times(1)).save(moveCopy)
         verifyNoMoreInteractions(repository)
     }
 
