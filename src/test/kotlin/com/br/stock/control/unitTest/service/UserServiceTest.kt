@@ -1,6 +1,5 @@
 package com.br.stock.control.unitTest.service
 
-import com.br.stock.control.model.entity.Contact
 import com.br.stock.control.model.entity.Role
 import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.UserRepository
