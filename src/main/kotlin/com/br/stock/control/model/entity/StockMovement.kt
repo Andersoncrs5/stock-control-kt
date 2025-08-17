@@ -3,7 +3,6 @@ package com.br.stock.control.model.entity
 import com.br.stock.control.model.enum.MovementTypeEnum
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDate
@@ -11,22 +10,21 @@ import java.time.LocalDate
 @Document(collection = "stock_movements")
 data class StockMovement(
     @Id
-    var id: String,
-    var productId: String,
-    var quantity: Integer,
-    var movementType: MovementTypeEnum,
-    var sourceLocation: String,
-    var destinationLocation: String,
-    var movementDate: LocalDate,
-    var moveByUserId: String,
-    var senderByUserId: String,
+    var id: String? = null,
+
+    var stockId: String = "",
+    var productId: String = "",
+    var movementType: MovementTypeEnum? = null,
+    var quantity: Long = 0,
     var reason: String? = null,
-    var referenceDocument: String? = null,
-    var notes: String,
+
+    var responsibleUserId: String = "",
+    var notes: String? = null,
+
     @Version
     var version: Long,
+
     @CreatedDate
-    var createdAt: LocalDate,
-    @LastModifiedDate
-    var updatedAt: LocalDate
+    var createdAt: LocalDate = LocalDate.now()
 )
+
