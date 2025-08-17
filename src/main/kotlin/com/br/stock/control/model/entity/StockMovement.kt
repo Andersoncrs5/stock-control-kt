@@ -20,8 +20,8 @@ data class StockMovement(
     var movementDate: LocalDate,
     var moveByUserId: String,
     var senderByUserId: String,
-    var reason: String,
-    var referenceDocument: String,
+    var reason: String? = null,
+    var referenceDocument: String? = null,
     var notes: String,
     @Version
     var version: Long,

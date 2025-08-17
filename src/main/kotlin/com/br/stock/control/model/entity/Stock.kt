@@ -9,17 +9,17 @@ import java.time.LocalDate
 @Document(collection = "stocks")
 data class Stock(
     @Id
-    var id: String,
-    var productId: String,
-    var addressId: String,
-    var quantity: Integer,
-    var locationName: String,
-    var lastMovementAt: LocalDate,
-    var responsibleUserId: String,
-    var warehouseId: String,
+    var id: String? = null,
+    var productId: String = "",
+    var addressId: String = "",
+    var quantity: Int = 0,
+    var locationName: String = "",
+    var lastMovementAt: LocalDate = LocalDate.now(),
+    var responsibleUserId: String = "",
+    var warehouseId: String = "",
     var isActive: Boolean = true,
     @CreatedDate
-    var createdAt: LocalDate,
+    var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDate
+    var updatedAt: LocalDate = LocalDate.now(),
 )
