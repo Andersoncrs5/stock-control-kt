@@ -1,6 +1,7 @@
 package com.br.stock.control.integration.address
 
 import com.br.stock.control.model.dto.address.CreateAddressDTO
+import com.br.stock.control.model.dto.address.UpdateAddressDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.dto.user.UserDTO
@@ -23,8 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -201,6 +201,108 @@ class AddressControllerTest {
         assertThat(response.body?.longitude).isEqualTo(address.longitude).withFailMessage("Longitudes are different")
         assertThat(response.body?.isActive).isEqualTo(address.isActive).withFailMessage("isActive are different")
         assertThat(response.body?.type).isEqualTo(address.type).withFailMessage("Types are different")
+    }
+
+    @Test
+    fun `should delete address`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val createWareHouse: Warehouse = createWareHouse(responseToken)
+        val address: Address = createAddress(responseToken, createWareHouse)
+
+        val mvcResult = mockMvc.perform(
+            delete(this.urlAddress + "/${address.id}").header("Authorization", "Bearer ${responseToken.token}"))
+            .andExpect(status().isNoContent).andReturn()
+
+        val response: ResponseBody<Unit> = objectMapper.convertValue(
+            objectMapper.readTree(mvcResult.response.contentAsString),
+            object : TypeReference<ResponseBody<Unit>>() {}
+        )
+
+        assertThat(response.body).isInstanceOf(Unit::class.java)
+        assertThat(response.message).isEqualTo("Address deleted").withFailMessage("Msg are different")
+    }
+
+    @Test
+    fun `should update address`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val createWareHouse: Warehouse = createWareHouse(responseToken)
+        val address: Address = createAddress(responseToken, createWareHouse)
+
+        val num: Long = Random.nextLong(100000)
+        val dto = UpdateAddressDTO(
+            street = "street $num",
+            number = "$num",
+            complement = "complement $num",
+            neighborhood = "neighborhood $num",
+            city = "city $num",
+            state = "state $num",
+            zipCode = "$num",
+            country = "US",
+            referencePoint = "$num",
+            latitude= Random.nextDouble(999999.999),
+            longitude = Random.nextDouble(999999.999),
+            isActive = true
+        )
+
+        val mvcResult = mockMvc.perform(
+            put(this.urlAddress + "/${address.id}")
+                .header("Authorization", "Bearer ${responseToken.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+        )
+            .andExpect(status().isOk).andReturn()
+
+        val response: ResponseBody<Address> = objectMapper.convertValue(
+            objectMapper.readTree(mvcResult.response.contentAsString),
+            object : TypeReference<ResponseBody<Address>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Address updated")
+        assertThat(response.body.id).isEqualTo(address.id).withFailMessage("Ids are different")
+        assertThat(response.body.street).isEqualTo(dto.street).withFailMessage("Streets are different")
+        assertThat(response.body.number).isEqualTo(dto.number).withFailMessage("Numbers are different")
+        assertThat(response.body.complement).isEqualTo(dto.complement).withFailMessage("complements are different")
+        assertThat(response.body.neighborhood).isEqualTo(dto.neighborhood).withFailMessage("neighborhood are different")
+        assertThat(response.body.city).isEqualTo(dto.city).withFailMessage("Cities are different")
+        assertThat(response.body.state).isEqualTo(dto.state).withFailMessage("states are different")
+        assertThat(response.body.zipCode).isEqualTo(dto.zipCode).withFailMessage("zipCodes are different")
+        assertThat(response.body.country).isEqualTo(dto.country).withFailMessage("countries are different")
+        assertThat(response.body.referencePoint).isEqualTo(dto.referencePoint).withFailMessage("referencePoint are different")
+        assertThat(response.body.latitude).isEqualTo(dto.latitude).withFailMessage("latitude are different")
+        assertThat(response.body.longitude).isEqualTo(dto.longitude).withFailMessage("longitude are different")
+        assertThat(response.body.isActive).isTrue.withFailMessage("isActive are different")
+    }
+
+    @Test
+    fun `should change status active`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val createWareHouse: Warehouse = createWareHouse(responseToken)
+        val address: Address = createAddress(responseToken, createWareHouse)
+
+        val mvcResult = mockMvc.perform(
+            put(this.urlAddress + "/${address.id}/status/active")
+                .header("Authorization", "Bearer ${responseToken.token}"))
+            .andExpect(status().isOk).andReturn()
+
+        val response: ResponseBody<Address> = objectMapper.convertValue(
+            objectMapper.readTree(mvcResult.response.contentAsString),
+            object : TypeReference<ResponseBody<Address>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Address status changed")
+        assertThat(response.body.id).isEqualTo(address.id).withFailMessage("Ids are different")
+        assertThat(response.body.street).isEqualTo(address.street).withFailMessage("Streets are different")
+        assertThat(response.body.number).isEqualTo(address.number).withFailMessage("Numbers are different")
+        assertThat(response.body.complement).isEqualTo(address.complement).withFailMessage("complements are different")
+        assertThat(response.body.neighborhood).isEqualTo(address.neighborhood).withFailMessage("neighborhood are different")
+        assertThat(response.body.city).isEqualTo(address.city).withFailMessage("Cities are different")
+        assertThat(response.body.state).isEqualTo(address.state).withFailMessage("states are different")
+        assertThat(response.body.zipCode).isEqualTo(address.zipCode).withFailMessage("zipCodes are different")
+        assertThat(response.body.country).isEqualTo(address.country).withFailMessage("countries are different")
+        assertThat(response.body.referencePoint).isEqualTo(address.referencePoint).withFailMessage("referencePoint are different")
+        assertThat(response.body.latitude).isEqualTo(address.latitude).withFailMessage("latitude are different")
+        assertThat(response.body.longitude).isEqualTo(address.longitude).withFailMessage("longitude are different")
+        assertThat(response.body.isActive).isFalse.withFailMessage("isActive is true")
     }
 
 }
