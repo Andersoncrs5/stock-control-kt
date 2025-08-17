@@ -198,6 +198,18 @@ class UserController(
         address.id = user.id
         address.type = TypeAddressEnum.USER
 
+        val check = this.facades.addressService.existsByIdAndType(address.id, address.type)
+
+        if (check) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(), message = "Address exists!",
+                    path = request.requestURI, method = request.method,
+                    body = null
+                )
+            )
+        }
+
         val save: Address = this.facades.addressService.save(address)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(

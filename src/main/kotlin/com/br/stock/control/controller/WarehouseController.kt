@@ -358,6 +358,18 @@ class WarehouseController(
         address.id = ware.id
         address.type = TypeAddressEnum.WARE_HOUSE
 
+        val check = this.facadeServices.addressService.existsByIdAndType(address.id, address.type)
+
+        if (check) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(), message = "Address exists!",
+                    path = request.requestURI, method = request.method,
+                    body = null
+                )
+            )
+        }
+
         val save: Address = this.facadeServices.addressService.save(address)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
