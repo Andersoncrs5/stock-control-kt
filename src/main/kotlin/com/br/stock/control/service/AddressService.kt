@@ -1,6 +1,7 @@
 package com.br.stock.control.service
 
 import com.br.stock.control.model.entity.Address
+import com.br.stock.control.model.enum.TypeAddressEnum
 import com.br.stock.control.repository.AddressRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -63,6 +64,7 @@ class AddressService(
         return original
     }
 
+    @Transactional
     fun update(original: Address, toMerge: Address): Address {
         logger.debug("Updating address")
         val address = this.save(
@@ -81,6 +83,12 @@ class AddressService(
         val save = this.repository.save(address)
         logger.debug("Address active changed")
         return save
+    }
+
+    @Transactional(readOnly = true)
+    fun existsByIdAndType(id: String, type: TypeAddressEnum): Boolean {
+        logger.debug("Checking if exists a address with id and type")
+        return this.repository.existsByIdAndType(id, type)
     }
 
 }
