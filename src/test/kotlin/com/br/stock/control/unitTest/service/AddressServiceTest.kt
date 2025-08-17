@@ -151,4 +151,28 @@ class AddressServiceTest {
         verifyNoMoreInteractions(repository)
     }
 
+    @Test
+    fun `should return true when check exists by id and type`() {
+        whenever(repository.existsByIdAndType(addressMock.id, addressMock.type)).thenReturn(true)
+
+        val result = this.service.existsByIdAndType(addressMock.id, addressMock.type)
+
+        assertThat(result).isTrue
+
+        verify(repository, times(1)).existsByIdAndType(addressMock.id, addressMock.type)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should return false when check exists by id and type`() {
+        whenever(repository.existsByIdAndType(addressMock.id, addressMock.type)).thenReturn(false)
+
+        val result = this.service.existsByIdAndType(addressMock.id, addressMock.type)
+
+        assertThat(result).isFalse
+
+        verify(repository, times(1)).existsByIdAndType(addressMock.id, addressMock.type)
+        verifyNoMoreInteractions(repository)
+    }
+
 }
