@@ -1,6 +1,7 @@
 package com.br.stock.control.util.facades
 
 import com.br.stock.control.util.mappers.address.CreateAddressMapper
+import com.br.stock.control.util.mappers.address.UpdateAddressMapper
 import com.br.stock.control.util.mappers.category.CreateCategoryMapper
 import com.br.stock.control.util.mappers.category.UpdateCategoryMapper
 import com.br.stock.control.util.mappers.product.CreateProductMapper
@@ -16,5 +17,6 @@ class FacadeMappers(
     val updateCategoryMapper: UpdateCategoryMapper,
     val createWarehouseMapper: CreateWarehouseMapper,
     val createAddressMapper: CreateAddressMapper,
+    val updateAddressMapper: UpdateAddressMapper
 ) {
 }
