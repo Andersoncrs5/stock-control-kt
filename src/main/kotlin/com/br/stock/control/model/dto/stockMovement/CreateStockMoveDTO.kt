@@ -8,5 +8,6 @@ data class CreateStockMoveDTO(
     var movementType: MovementTypeEnum? = null,
     var quantity: Long = 0,
     var reason: String? = null,
+    var responsibleUserId: String = "",
     var notes: String? = null,
 )
