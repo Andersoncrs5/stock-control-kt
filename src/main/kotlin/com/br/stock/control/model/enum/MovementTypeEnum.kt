@@ -4,5 +4,6 @@ enum class MovementTypeEnum {
     IN,
     OUT,
     TRANSFER,
-    ADJUSTMENT
+    ADJUSTMENT,
+    DISCARD
 }
