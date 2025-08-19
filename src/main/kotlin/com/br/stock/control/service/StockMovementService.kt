@@ -1,10 +1,14 @@
 package com.br.stock.control.service
 
 import com.br.stock.control.model.entity.StockMovement
+import com.br.stock.control.model.enum.MovementTypeEnum
 import com.br.stock.control.repository.StockMovementRepository
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.Optional
 
 @Service
@@ -36,6 +40,13 @@ class StockMovementService(
     }
 
     @Transactional
+    fun deleteManyByStockId(id: String) {
+        logger.debug("Deleting many stock movement by stockId ")
+        this.repository.deleteAllByStockId(id)
+        logger.debug("Stock movements many deleted by stockId")
+    }
+
+    @Transactional
     fun create(move: StockMovement): StockMovement {
         logger.debug("Creating a StockMovement")
         val movement = this.repository.save(move)
@@ -43,5 +54,18 @@ class StockMovementService(
         return movement
     }
 
+    @Transactional(readOnly = true)
+    fun findAll(
+        stockId: String?, productId: String?, movementType: MovementTypeEnum?,
+        minQuantity: Long?, maxQuantity: Long?, reason: String?,
+        responsibleUserId: String?, notes: String?,
+        createdAtBefore: LocalDate?, createdAtAfter: LocalDate?, pageable: Pageable
+    ): Page<StockMovement> {
+        return this.repository.findAll(
+            stockId, productId, movementType, minQuantity,
+            maxQuantity, reason, responsibleUserId, notes,
+            createdAtBefore, createdAtAfter, pageable
+        )
+    }
 
 }
