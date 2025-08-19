@@ -19,5 +19,5 @@ data class Stock(
     @CreatedDate
     var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDate?,
+    var updatedAt: LocalDate? = null,
 )
