@@ -109,4 +109,9 @@ class UserService(
         return save
     }
 
+    @Transactional(readOnly = true)
+    fun existsById(id: String): Boolean {
+        return this.repository.existsById(id)
+    }
+
 }
