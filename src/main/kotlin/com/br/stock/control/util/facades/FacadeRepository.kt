@@ -3,6 +3,7 @@ package com.br.stock.control.util.facades
 import com.br.stock.control.repository.AddressRepository
 import com.br.stock.control.repository.CategoryRepository
 import com.br.stock.control.repository.ProductRepository
+import com.br.stock.control.repository.StockMovementRepository
 import com.br.stock.control.repository.StockRepository
 import com.br.stock.control.repository.UserRepository
 import com.br.stock.control.repository.WarehouseRepository
@@ -15,6 +16,7 @@ class FacadeRepository(
     val categoryRepository: CategoryRepository,
     val wareHouseRepository: WarehouseRepository,
     val addressRepository: AddressRepository,
-    val stockRepository: StockRepository
+    val stockRepository: StockRepository,
+    val stockMovementRepository: StockMovementRepository
 ) {
 }
