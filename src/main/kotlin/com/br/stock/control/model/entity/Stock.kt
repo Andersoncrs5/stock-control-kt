@@ -11,7 +11,7 @@ data class Stock(
     @Id
     var id: String? = null,
     var productId: String = "",
-    var quantity: Int = 0,
+    var quantity: Long = 0,
     var lastMovementAt: LocalDate = LocalDate.now(),
     var responsibleUserId: String = "",
     var warehouseId: String = "",
