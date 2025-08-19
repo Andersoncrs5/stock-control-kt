@@ -22,7 +22,7 @@ data class StockMovement(
     var notes: String? = null,
 
     @Version
-    var version: Long,
+    var version: Long = 0,
 
     @CreatedDate
     var createdAt: LocalDate = LocalDate.now()
