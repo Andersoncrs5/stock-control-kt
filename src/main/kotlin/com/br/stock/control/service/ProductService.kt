@@ -107,4 +107,9 @@ class ProductService(
         return this.productRepository.save(product)
     }
 
+    @Transactional(readOnly = true)
+    fun existsById(id: String): Boolean {
+        return this.productRepository.existsById(id)
+    }
+
 }
