@@ -99,4 +99,10 @@ class WareHouseService(
         logger.debug("checking if the name exists..")
         return this.repository.existsByName(name)
     }
+
+    @Transactional(readOnly = true)
+    fun existsById(id: String): Boolean {
+        return this.repository.existsById(id)
+    }
+
 }
