@@ -150,4 +150,28 @@ class StockServiceTest {
         verifyNoMoreInteractions(repository)
     }
 
+    @Test
+    fun `should return true  when check exists by id`() {
+        whenever(repository.existsById("1")).thenReturn(true)
+
+        val result = this.service.existsById("1")
+
+        assertThat(result).isTrue
+
+        verify(repository, times(1)).existsById("1")
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `should return false when check exists by id`() {
+        whenever(repository.existsById("1")).thenReturn(false)
+
+        val result = this.service.existsById("1")
+
+        assertThat(result).isFalse
+
+        verify(repository, times(1)).existsById("1")
+        verifyNoMoreInteractions(repository)
+    }
+
 }
