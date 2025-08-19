@@ -1,9 +1,9 @@
-package com.br.stock.control.integration.stock
+package com.br.stock.control.integration.stockMovement
 
 import com.br.stock.control.model.dto.category.CreateCategoryDTO
 import com.br.stock.control.model.dto.product.CreateProductDTO
 import com.br.stock.control.model.dto.stock.CreateStockDTO
-import com.br.stock.control.model.dto.stock.UpdateStockDTO
+import com.br.stock.control.model.dto.stockMovement.CreateStockMoveDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.dto.user.UserDTO
@@ -11,7 +11,9 @@ import com.br.stock.control.model.dto.warehouse.CreateWareDTO
 import com.br.stock.control.model.entity.Category
 import com.br.stock.control.model.entity.Product
 import com.br.stock.control.model.entity.Stock
+import com.br.stock.control.model.entity.StockMovement
 import com.br.stock.control.model.entity.Warehouse
+import com.br.stock.control.model.enum.MovementTypeEnum
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import com.br.stock.control.model.enum.WareHouseEnum
 import com.br.stock.control.util.facades.FacadeRepository
@@ -32,31 +34,31 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class StockControllerTest {
+class StockMovementControllerTest {
+
     @Autowired private lateinit var mockMvc: MockMvc
-
     @Autowired private lateinit var objectMapper: ObjectMapper
-
     @Autowired private lateinit var facadeRepository: FacadeRepository
 
+    private val urlMove = "/v1/stock-move"
     private val urlStock: String = "/v1/stock"
 
     @BeforeEach fun setup() {
         this.facadeRepository.userRepository.deleteAll()
-        this.facadeRepository.wareHouseRepository.deleteAll()
         this.facadeRepository.productRepository.deleteAll()
+        this.facadeRepository.categoryRepository.deleteAll()
         this.facadeRepository.stockRepository.deleteAll()
+        this.facadeRepository.wareHouseRepository.deleteAll()
+        this.facadeRepository.stockMovementRepository.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {
@@ -254,58 +256,15 @@ class StockControllerTest {
         assertThat(response.body.id).isNotBlank.withFailMessage("Id is blank")
         assertThat(response.body.productId).isEqualTo(dto.productId).withFailMessage("Product Id are different")
         assertThat(response.body.quantity).isEqualTo(dto.quantity).withFailMessage("Quantity are different")
-        assertThat(response.body.responsibleUserId).isEqualTo(dto.responsibleUserId).withFailMessage("responsibleUserId are different")
+        assertThat(response.body.responsibleUserId).isEqualTo(dto.responsibleUserId)
+            .withFailMessage("responsibleUserId are different")
         assertThat(response.body.warehouseId).isEqualTo(dto.warehouseId).withFailMessage("Warehouse Id are different")
         assertThat(response.body.isActive).isTrue.withFailMessage("Status active is false")
 
         return response.body
     }
 
-    @Test
-    fun `should create new stock`() {
-        val responseToken = createUserAndLog()
-        val createWareHouse = createWareHouse(responseToken)
-        val createProduct = createProduct(responseToken)
-        val user = getUser(responseToken.token)
-
-        val dto = CreateStockDTO(
-            productId= createProduct.id,
-            quantity = 100,
-            responsibleUserId = user.id,
-            warehouseId = createWareHouse.id
-        )
-
-        val mvcResult = mockMvc.perform(
-            post(urlStock)
-                .header("Authorization", "Bearer ${responseToken.token}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto))
-        )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isCreated).andReturn()
-
-        val response: ResponseBody<Stock> = objectMapper.readValue(
-            mvcResult.response.contentAsString,
-            object : TypeReference<ResponseBody<Stock>>() {}
-        )
-
-        assertThat(response.message).isEqualTo("Stock created")
-        assertThat(response.body.id).isNotBlank.withFailMessage("Id is blank")
-        assertThat(response.body.productId).isEqualTo(dto.productId).withFailMessage("Product Id are different")
-        assertThat(response.body.quantity).isEqualTo(dto.quantity).withFailMessage("Quantity are different")
-        assertThat(response.body.responsibleUserId).isEqualTo(dto.responsibleUserId).withFailMessage("responsibleUserId are different")
-        assertThat(response.body.warehouseId).isEqualTo(dto.warehouseId).withFailMessage("Warehouse Id are different")
-        assertThat(response.body.isActive).isTrue.withFailMessage("Status active is false")
-    }
-
-    @Test
-    fun `should get stock`() {
-        val responseToken = createUserAndLog()
-        val createWareHouse = createWareHouse(responseToken)
-        val createProduct = createProduct(responseToken)
-        val user = getUser(responseToken.token)
-        val stock: Stock = createStock(responseToken, createProduct.id, user.id, createWareHouse.id)
-
+    fun getStock(responseToken: ResponseToken, stock: Stock): Stock {
         val mvcResult = mockMvc.perform(
             get(this.urlStock + "/${stock.id}")
                 .header("Authorization", "Bearer ${responseToken.token}")
@@ -318,27 +277,152 @@ class StockControllerTest {
             object : TypeReference<ResponseBody<Stock>>() {}
         )
 
-        assertThat(response.message).isEqualTo("Stock found")
-        assertThat(response.body.id).isEqualTo(stock.id).withFailMessage("Id are different")
-        assertThat(response.body.productId).isEqualTo(stock.productId).withFailMessage("Product Id are different")
-        assertThat(response.body.quantity).isEqualTo(stock.quantity).withFailMessage("Quantity are different")
-        assertThat(response.body.responsibleUserId).isEqualTo(stock.responsibleUserId).withFailMessage("responsibleUserId are different")
-        assertThat(response.body.warehouseId).isEqualTo(stock.warehouseId).withFailMessage("Warehouse Id are different")
-        assertThat(response.body.createdAt).isEqualTo(stock.createdAt).withFailMessage("CreatedAt are different")
-        assertThat(response.body.isActive).isTrue.withFailMessage("Status active is false")
+        return response.body
+    }
 
+    fun createStockMove(
+        stock: Stock, product: Product, user: UserDTO, responseToken: ResponseToken
+    ): StockMovement {
+        val dto = CreateStockMoveDTO(
+            stockId = stock.id as String,
+            productId = product.id,
+            movementType = MovementTypeEnum.IN ,
+            quantity = Random.nextLong(),
+            reason = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            responsibleUserId = user.id,
+            notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        )
+
+        val mvcResult = mockMvc.perform(
+            post(this.urlMove)
+                .header("Authorization", "Bearer ${responseToken.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isCreated).andReturn()
+
+        val response: ResponseBody<StockMovement> = objectMapper.readValue(
+            mvcResult.response.contentAsString,
+            object : TypeReference<ResponseBody<StockMovement>>() {}
+        )
+
+        return response.body
+    }
+
+    fun getMove(move: StockMovement, responseToken: ResponseToken): StockMovement {
+        val mvcResult = mockMvc.perform(
+            get(this.urlMove + "/${move.id}")
+                .header("Authorization", "Bearer ${responseToken.token}")
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk).andReturn()
+
+        val response: ResponseBody<StockMovement> = objectMapper.readValue(
+            mvcResult.response.contentAsString,
+            object : TypeReference<ResponseBody<StockMovement>>() {}
+        )
+
+        assertThat(response.body.id).isEqualTo(move.id)
+
+        return response.body
     }
 
     @Test
-    fun `should delete stock`() {
-        val responseToken = createUserAndLog()
-        val createWareHouse = createWareHouse(responseToken)
-        val createProduct = createProduct(responseToken)
-        val user = getUser(responseToken.token)
-        val stock: Stock = createStock(responseToken, createProduct.id, user.id, createWareHouse.id)
+    fun `should create new stock move`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val warehouse = createWareHouse(responseToken)
+        val category: Category = createCategory(responseToken.token)
+        val user: UserDTO = this.getUser(responseToken.token)
+        val product: Product = this.createProduct(responseToken)
+        val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+
+        val dto = CreateStockMoveDTO(
+            stockId = stock.id as String,
+            productId = product.id,
+            movementType = MovementTypeEnum.IN ,
+            quantity = Random.nextLong(),
+            reason = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            responsibleUserId = user.id,
+            notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        )
 
         val mvcResult = mockMvc.perform(
-            delete(this.urlStock + "/${stock.id}")
+            post(this.urlMove)
+                .header("Authorization", "Bearer ${responseToken.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isCreated).andReturn()
+
+        val response: ResponseBody<StockMovement> = objectMapper.readValue(
+            mvcResult.response.contentAsString,
+            object : TypeReference<ResponseBody<StockMovement>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Stock movement created")
+        assertThat(response.body.id).isNotBlank.withFailMessage("Id is blank")
+        assertThat(response.body.stockId).isEqualTo(dto.stockId).withFailMessage("stockId are different")
+        assertThat(response.body.productId).isEqualTo(dto.productId).withFailMessage("productId are different")
+        assertThat(response.body.movementType).isEqualTo(dto.movementType)
+            .withFailMessage("movementType are different")
+        assertThat(response.body.quantity).isEqualTo(dto.quantity).withFailMessage("quantity are different")
+        assertThat(response.body.reason).isEqualTo(dto.reason).withFailMessage(" are different")
+        assertThat(response.body.responsibleUserId).isEqualTo(dto.responsibleUserId)
+            .withFailMessage(" are different")
+        assertThat(response.body.notes).isEqualTo(dto.notes).withFailMessage(" are different")
+
+        val stock1 = getStock(responseToken, stock)
+
+        assertThat(stock1.quantity).isEqualTo(stock.quantity + dto.quantity).withFailMessage("quantity are different in stock obj")
+    }
+
+    @Test
+    fun `should get stock move`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val warehouse = createWareHouse(responseToken)
+        val category: Category = createCategory(responseToken.token)
+        val user: UserDTO = this.getUser(responseToken.token)
+        val product: Product = this.createProduct(responseToken)
+        val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+        val move = this.createStockMove(stock, product, user, responseToken)
+
+        val mvcResult = mockMvc.perform(
+            get(this.urlMove + "/${move.id}")
+                .header("Authorization", "Bearer ${responseToken.token}")
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk).andReturn()
+
+        val response: ResponseBody<StockMovement> = objectMapper.readValue(
+            mvcResult.response.contentAsString,
+            object : TypeReference<ResponseBody<StockMovement>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Stock movement found")
+        assertThat(response.body.id).isEqualTo(move.id).withFailMessage("Id are different")
+        assertThat(response.body.stockId).isEqualTo(move.stockId).withFailMessage("stockId are different")
+        assertThat(response.body.productId).isEqualTo(move.productId).withFailMessage("productId are different")
+        assertThat(response.body.movementType).isEqualTo(move.movementType)
+            .withFailMessage("movementType are different")
+        assertThat(response.body.quantity).isEqualTo(move.quantity).withFailMessage("quantity are different")
+        assertThat(response.body.reason).isEqualTo(move.reason).withFailMessage("reason are different")
+        assertThat(response.body.responsibleUserId).isEqualTo(move.responsibleUserId)
+            .withFailMessage("responsibleUserId are different")
+        assertThat(response.body.notes).isEqualTo(move.notes).withFailMessage("notes are different")
+    }
+
+    @Test
+    fun `should delete move`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val warehouse = createWareHouse(responseToken)
+        val category: Category = createCategory(responseToken.token)
+        val user: UserDTO = this.getUser(responseToken.token)
+        val product: Product = this.createProduct(responseToken)
+        val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+        val move = this.createStockMove(stock, product, user, responseToken)
+
+        val mvcResult = mockMvc.perform(
+            delete(this.urlMove + "/${move.id}")
                 .header("Authorization", "Bearer ${responseToken.token}")
         )
             .andDo(MockMvcResultHandlers.print())
@@ -349,71 +433,41 @@ class StockControllerTest {
             object : TypeReference<ResponseBody<Unit>>() {}
         )
 
-        assertThat(response.message).isEqualTo("Stock deleted")
-        assertThat(response.body).isInstanceOf(Unit::class.java)
-    }
+        assertThat(response.message).isEqualTo("Stock movement deleted")
 
-    @Test
-    fun `should update stock`() {
-        val responseToken = createUserAndLog()
-        val createWareHouse = createWareHouse(responseToken)
-        val createProduct = createProduct(responseToken)
-        val user = getUser(responseToken.token)
-        val stock: Stock = createStock(responseToken, createProduct.id, user.id, createWareHouse.id)
-
-        val dto = UpdateStockDTO(
-            quantity = Random.nextLong(100000000), responsibleUserId = user.id, warehouseId = createWareHouse.id
-        )
-
-        val mvcResult = mockMvc.perform(
-            put(urlStock+"/${stock.id}")
+        mockMvc.perform(
+            get(this.urlMove + "/${move.id}")
                 .header("Authorization", "Bearer ${responseToken.token}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto))
         )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk).andReturn()
-
-        val response: ResponseBody<Stock> = objectMapper.readValue(
-            mvcResult.response.contentAsString,
-            object : TypeReference<ResponseBody<Stock>>() {}
-        )
-
-        assertThat(response.message).isEqualTo("Stock updated")
-        assertThat(response.body.id).isEqualTo(stock.id).withFailMessage("Id are different")
-        assertThat(response.body.productId).isEqualTo(stock.productId).withFailMessage("Product Id are different")
-        assertThat(response.body.quantity).isEqualTo(dto.quantity).withFailMessage("Quantity are different")
-        assertThat(response.body.responsibleUserId).isEqualTo(dto.responsibleUserId).withFailMessage("responsibleUserId are different")
-        assertThat(response.body.warehouseId).isEqualTo(dto.warehouseId).withFailMessage("Warehouse Id are different")
-        assertThat(response.body.isActive).isTrue.withFailMessage("Status active is false")
+            .andExpect(status().isNotFound).andReturn()
     }
 
     @Test
-    fun `should change status stock`() {
-        val responseToken = createUserAndLog()
-        val createWareHouse = createWareHouse(responseToken)
-        val createProduct = createProduct(responseToken)
-        val user = getUser(responseToken.token)
-        val stock: Stock = createStock(responseToken, createProduct.id, user.id, createWareHouse.id)
+    fun `should delete many stock movements`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val warehouse = createWareHouse(responseToken)
+        val user: UserDTO = this.getUser(responseToken.token)
+        val product: Product = this.createProduct(responseToken)
+        val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+
+        val moves = (1..10).map { this.createStockMove(stock, product, user, responseToken) }
+        val ids = moves.joinToString(",") { it.id.toString() }
 
         val mvcResult = mockMvc.perform(
-            put(urlStock+"/${stock.id}/status/active")
-                .header("Authorization", "Bearer ${responseToken.token}"))
+            delete("${this.urlMove}/$ids/many")
+                .header("Authorization", "Bearer ${responseToken.token}")
+        )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk).andReturn()
+            .andExpect(status().isOk)
+            .andReturn()
 
-        val response: ResponseBody<Stock> = objectMapper.readValue(
+        val response: ResponseBody<Unit> = objectMapper.readValue(
             mvcResult.response.contentAsString,
-            object : TypeReference<ResponseBody<Stock>>() {}
+            object : TypeReference<ResponseBody<Unit>>() {}
         )
 
-        assertThat(response.message).isEqualTo("Status changed")
-        assertThat(response.body.id).isEqualTo(stock.id).withFailMessage("Id are different")
-        assertThat(response.body.productId).isEqualTo(stock.productId).withFailMessage("Product Id are different")
-        assertThat(response.body.quantity).isEqualTo(stock.quantity).withFailMessage("Quantity are different")
-        assertThat(response.body.responsibleUserId).isEqualTo(stock.responsibleUserId).withFailMessage("responsibleUserId are different")
-        assertThat(response.body.warehouseId).isEqualTo(stock.warehouseId).withFailMessage("Warehouse Id are different")
-        assertThat(response.body.isActive).isFalse.withFailMessage("Status active is true")
+        assertThat(response.message).isEqualTo("Stock movement many deleted")
     }
 
 }

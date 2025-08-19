@@ -28,7 +28,7 @@ class StockServiceTest {
     private val stockMock = Stock(
         id = UUID.randomUUID().toString(),
         productId = UUID.randomUUID().toString(),
-        quantity = Random().nextInt(100000),
+        quantity = Random().nextLong(100000),
         lastMovementAt = LocalDate.now(),
         responsibleUserId = UUID.randomUUID().toString(),
         warehouseId = UUID.randomUUID().toString(),
