@@ -5,4 +5,5 @@ import com.br.stock.control.util.filters.stockMovement.StockMovementCustomReposi
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface StockMovementRepository: MongoRepository<StockMovement, String>, StockMovementCustomRepository {
+    fun deleteAllByStockId(stockId: String)
 }
