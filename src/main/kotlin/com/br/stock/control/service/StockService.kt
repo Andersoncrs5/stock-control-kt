@@ -2,12 +2,16 @@ package com.br.stock.control.service
 
 import com.br.stock.control.model.dto.stock.UpdateStockDTO
 import com.br.stock.control.model.entity.Stock
+import com.br.stock.control.model.entity.StockMovement
+import com.br.stock.control.model.enum.MovementTypeEnum
 import com.br.stock.control.repository.StockRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.util.Optional
 
@@ -86,6 +90,41 @@ class StockService(
     @Transactional(readOnly = true)
     fun existsById(id: String): Boolean {
         return this.repository.existsById(id)
+    }
+
+    fun adjustQuantity(stock: Stock, move: StockMovement): Stock {
+        when (move.movementType) {
+            MovementTypeEnum.IN -> stock.quantity += move.quantity
+
+            MovementTypeEnum.OUT -> {
+                validateQuantity(stock, move)
+                stock.quantity -= move.quantity
+            }
+
+            MovementTypeEnum.DISCARD -> {
+                validateQuantity(stock, move)
+                stock.quantity -= move.quantity
+            }
+
+            MovementTypeEnum.ADJUSTMENT -> stock.quantity = move.quantity
+
+            MovementTypeEnum.TRANSFER -> {
+                throw UnsupportedOperationException("Transfer operation not yet implemented")
+            }
+
+            null -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Movement type cannot be null")
+        }
+
+        return repository.save(stock)
+    }
+
+    private fun validateQuantity(stock: Stock, move: StockMovement) {
+        if (stock.quantity < move.quantity) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Insufficient stock: available ${stock.quantity}, required ${move.quantity}"
+            )
+        }
     }
 
 }
