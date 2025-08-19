@@ -75,18 +75,17 @@ class StockService(
 
     @Transactional(readOnly = true)
     fun findAll(
-        productId: String?,
-        minQuantity: Int?,
-        maxQuantity: Int?,
-        responsibleUserId: String?,
-        warehouseId: String?,
-        isActive: Boolean?,
-        createdAtBefore: LocalDate?,
-        createdAtAfter: LocalDate?,
-        pageable: Pageable
+        productId: String?, minQuantity: Int?, maxQuantity: Int?,
+        responsibleUserId: String?, warehouseId: String?, isActive: Boolean?,
+        createdAtBefore: LocalDate?, createdAtAfter: LocalDate?, pageable: Pageable
     ): Page<Stock> {
         val stocks: Page<Stock> = this.repository.findAll(productId,minQuantity,maxQuantity,responsibleUserId,warehouseId,isActive, createdAtBefore, createdAtAfter, pageable)
         return stocks
+    }
+
+    @Transactional(readOnly = true)
+    fun existsById(id: String): Boolean {
+        return this.repository.existsById(id)
     }
 
 }
