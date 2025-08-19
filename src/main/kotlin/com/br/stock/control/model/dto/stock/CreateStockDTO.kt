@@ -2,7 +2,7 @@ package com.br.stock.control.model.dto.stock
 
 class CreateStockDTO(
     var productId: String = "",
-    var quantity: Int = 0,
+    var quantity: Long = 0,
     var responsibleUserId: String = "",
     var warehouseId: String = "",
 )
