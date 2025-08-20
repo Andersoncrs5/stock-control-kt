@@ -92,6 +92,28 @@ class StockService(
         return this.repository.existsById(id)
     }
 
+    @Transactional
+    fun v(
+        stockOrigin: Stock, stockDestination: Stock, quantity: Long
+    ): Map<Int, Stock> {
+        if (quantity > stockOrigin.quantity) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Insufficient stock: available ${stockOrigin.quantity}"
+            )
+        }
+
+        stockOrigin.quantity -= quantity
+        stockDestination.quantity += quantity
+
+        val updatedOrigin = this.repository.save(stockOrigin)
+        val updatedDestination = this.repository.save(stockDestination)
+
+        return mapOf(
+            0 to updatedOrigin,
+            1 to updatedDestination
+        )
+    }
+
     fun adjustQuantity(stock: Stock, move: StockMovement): Stock {
         when (move.movementType) {
             MovementTypeEnum.IN -> stock.quantity += move.quantity
