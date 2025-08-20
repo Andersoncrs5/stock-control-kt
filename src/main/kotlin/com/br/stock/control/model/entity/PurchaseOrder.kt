@@ -11,20 +11,20 @@ import java.time.LocalDate
 
 data class PurchaseOrder(
     @Id
-    var id: String,
-    var orderNumber: String,
-    var supplierId: String,
-    var orderDate: LocalDate,
-    var expectedDeliveryDate: LocalDate,
-    var deliveryDate: LocalDate,
-    var status: StatusEnum,
-    var totalAmount: BigDecimal,
-    var placedByUserId: String,
-    var notes: String,
+    var id: String? = null,
+    var orderNumber: String = "",
+    var supplierId: String = "",
+    var orderDate: LocalDate? = null,
+    var expectedDeliveryDate: LocalDate? = null,
+    var deliveryDate: LocalDate? = null,
+    var status: StatusEnum? = null,
+    var totalAmount: BigDecimal? = null,
+    var placedByUserId: String? = null,
+    var notes: String? = null,
     @Version
-    var version: Long,
+    var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDate,
+    var createdAt: LocalDate? = null,
     @LastModifiedDate
-    var updatedAt: LocalDate
+    var updatedAt: LocalDate? = null,
 )
