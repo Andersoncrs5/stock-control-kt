@@ -5,6 +5,7 @@ import com.br.stock.control.repository.CategoryRepository
 import com.br.stock.control.repository.ProductRepository
 import com.br.stock.control.repository.StockMovementRepository
 import com.br.stock.control.repository.StockRepository
+import com.br.stock.control.repository.SupplierRepository
 import com.br.stock.control.repository.UserRepository
 import com.br.stock.control.repository.WarehouseRepository
 import org.springframework.stereotype.Service
@@ -17,6 +18,7 @@ class FacadeRepository(
     val wareHouseRepository: WarehouseRepository,
     val addressRepository: AddressRepository,
     val stockRepository: StockRepository,
-    val stockMovementRepository: StockMovementRepository
+    val stockMovementRepository: StockMovementRepository,
+    val supplierRepository: SupplierRepository
 ) {
 }

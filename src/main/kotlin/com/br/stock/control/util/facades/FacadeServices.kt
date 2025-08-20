@@ -8,6 +8,7 @@ import com.br.stock.control.service.ProductService
 import com.br.stock.control.service.RedisService
 import com.br.stock.control.service.StockMovementService
 import com.br.stock.control.service.StockService
+import com.br.stock.control.service.SupplierService
 import com.br.stock.control.service.UserService
 import com.br.stock.control.service.WareHouseService
 import org.springframework.stereotype.Service
@@ -23,6 +24,7 @@ class FacadeServices(
     val category: CategoryService,
     val addressService: AddressService,
     val stockMovementService: StockMovementService,
-    val stockService: StockService
+    val stockService: StockService,
+    val supplierService: SupplierService
 ) {
 }

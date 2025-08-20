@@ -7,6 +7,7 @@ import com.br.stock.control.util.mappers.category.UpdateCategoryMapper
 import com.br.stock.control.util.mappers.product.CreateProductMapper
 import com.br.stock.control.util.mappers.stock.CreateStockMapper
 import com.br.stock.control.util.mappers.stockMovement.CreateStockMoveMapper
+import com.br.stock.control.util.mappers.supplier.CreateSupplierMapper
 import com.br.stock.control.util.mappers.user.UserDTOMapper
 import com.br.stock.control.util.mappers.warehouse.CreateWarehouseMapper
 import org.springframework.stereotype.Service
@@ -21,6 +22,7 @@ class FacadeMappers(
     val createAddressMapper: CreateAddressMapper,
     val updateAddressMapper: UpdateAddressMapper,
     val createStockMapper: CreateStockMapper,
-    val createStockMoveMapper: CreateStockMoveMapper
+    val createStockMoveMapper: CreateStockMoveMapper,
+    val createSupplierMapper: CreateSupplierMapper
 ) {
 }
