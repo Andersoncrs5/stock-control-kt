@@ -1,6 +1,7 @@
 package com.br.stock.control.controller
 
 import com.br.stock.control.model.dto.stockMovement.CreateStockMoveDTO
+import com.br.stock.control.model.dto.stockMovement.MoveStockDTO
 import com.br.stock.control.model.entity.Stock
 import com.br.stock.control.model.entity.StockMovement
 import com.br.stock.control.model.enum.MovementTypeEnum
@@ -33,6 +34,45 @@ class StockMovementController(
     private val facadeServices: FacadeServices,
     private val facadeMappers: FacadeMappers
 ) {
+
+    @PostMapping("/move")
+    @RateLimiter(name = "createApiRateLimiter")
+    @SecurityRequirement(name = "bearerAuth")
+    fun move(
+        @Valid @RequestBody dto: MoveStockDTO,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Map<Int, Stock>?>> {
+        val stockOrigin = this.facadeServices.stockService.get(dto.stockIdOrigin)
+        if (stockOrigin.isEmpty) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Stock not found", request.requestURI,
+                    request.method, null
+                )
+            )
+        }
+
+        val stockDes = this.facadeServices.stockService.get(dto.stockIdDestination)
+        if (stockDes.isEmpty) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Stock not found", request.requestURI,
+                    request.method, null
+                )
+            )
+        }
+
+        val stocks: Map<Int, Stock> = this.facadeServices.stockService.moveStock(
+            stockOrigin.get(), stockDes.get(), dto.quantity
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseBody(
+                LocalDateTime.now(), "Stock moved", request.requestURI,
+                request.method, stocks
+            )
+        )
+    }
 
     @PostMapping
     @RateLimiter(name = "createApiRateLimiter")
@@ -214,6 +254,5 @@ class StockMovementController(
             )
         )
     }
-
 
 }
