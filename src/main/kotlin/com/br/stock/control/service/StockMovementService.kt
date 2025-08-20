@@ -1,5 +1,6 @@
 package com.br.stock.control.service
 
+import com.br.stock.control.model.entity.Stock
 import com.br.stock.control.model.entity.StockMovement
 import com.br.stock.control.model.enum.MovementTypeEnum
 import com.br.stock.control.repository.StockMovementRepository
