@@ -256,4 +256,53 @@ class SupplierController(
         )
     }
 
+    @PutMapping("/{supplierId}/status/preferred")
+    @RateLimiter(name = "updateApiRateLimiter")
+    @SecurityRequirement(name = "bearerAuth")
+    fun changeStatus(
+        @PathVariable supplierId: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Supplier?>> {
+        val userIdLog: String = services.tokenService.extractUserId(request)
+
+        val opt = this.services.supplierService.get(supplierId)
+        if (opt.isEmpty) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(),
+                    message = "Supplier not found",
+                    path = request.requestURI,
+                    method = request.method,
+                    body = null
+                )
+            )
+        }
+
+        if (opt.get().createdBy == userIdLog) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ResponseBody(
+                    timestamp = LocalDateTime.now(),
+                    message = "You do not change status preferred yourself!",
+                    path = request.requestURI,
+                    method = request.method,
+                    body = null
+                )
+            )
+        }
+
+        val preferred = this.services.supplierService.changeStatusIsPreferred(opt.get())
+
+        return ResponseEntity.ok(
+            ResponseBody(
+                timestamp = LocalDateTime.now(),
+                message = "Status preferred changed",
+                path = request.requestURI,
+                method = request.method,
+                body = preferred
+            )
+        )
+    }
+
+
+
 }
