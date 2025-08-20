@@ -20,5 +20,6 @@ enum class SupplierTypeEnum {
     AB,
     NGO,
     GOVERNMENT,
-    INDIVIDUAL
+    INDIVIDUAL,
+    NONE
 }
