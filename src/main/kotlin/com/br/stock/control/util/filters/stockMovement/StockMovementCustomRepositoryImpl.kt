@@ -78,7 +78,7 @@ class StockMovementCustomRepositoryImpl(
         }
 
         val categories = mongoTemplate.find(query, StockMovement::class.java)
-        val total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Category::class.java)
+        val total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), StockMovement::class.java)
 
         return PageImpl(categories, pageable, total)
     }
