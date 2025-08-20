@@ -4,6 +4,7 @@ import com.br.stock.control.model.dto.category.CreateCategoryDTO
 import com.br.stock.control.model.dto.product.CreateProductDTO
 import com.br.stock.control.model.dto.stock.CreateStockDTO
 import com.br.stock.control.model.dto.stockMovement.CreateStockMoveDTO
+import com.br.stock.control.model.dto.stockMovement.MoveStockDTO
 import com.br.stock.control.model.dto.user.LoginUserDTO
 import com.br.stock.control.model.dto.user.RegisterUserDTO
 import com.br.stock.control.model.dto.user.UserDTO
@@ -468,6 +469,41 @@ class StockMovementControllerTest {
         )
 
         assertThat(response.message).isEqualTo("Stock movement many deleted")
+    }
+
+    @Test
+    fun `should move stock`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val warehouse = createWareHouse(responseToken)
+        val user: UserDTO = this.getUser(responseToken.token)
+        val product: Product = this.createProduct(responseToken)
+        val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+        val stock1: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
+
+        val dto = MoveStockDTO(
+            stockIdOrigin = stock.id as String,
+            stockIdDestination = stock1.id as String,
+            quantity = 10
+        )
+
+        val mvcResult = mockMvc.perform(
+            post(this.urlMove + "/move")
+                .header("Authorization", "Bearer ${responseToken.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk).andReturn()
+
+        val response: ResponseBody<Map<Int, Stock>> = objectMapper.readValue(
+            mvcResult.response.contentAsString,
+            object : TypeReference<ResponseBody<Map<Int, Stock>>>() {}
+        )
+
+        assertThat(response.body.get(0)?.id).isEqualTo(dto.stockIdOrigin)
+        assertThat(response.body.get(1)?.id).isEqualTo(dto.stockIdDestination)
+        assertThat(response.body.get(0)?.quantity).isEqualTo(stock.quantity - dto.quantity)
+        assertThat(response.body.get(1)?.quantity).isEqualTo(stock.quantity + dto.quantity)
     }
 
 }

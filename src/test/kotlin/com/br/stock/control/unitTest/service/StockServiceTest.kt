@@ -18,7 +18,13 @@ import java.util.Random
 import java.util.UUID
 import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.verifyNoInteractions
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 @ExtendWith(MockitoExtension::class)
 class StockServiceTest {
@@ -36,6 +42,45 @@ class StockServiceTest {
         createdAt = LocalDate.now(),
         updatedAt = LocalDate.now()
     )
+
+    @Test
+    fun `should throw ResponseStatusException when quantity exceeds stock`() {
+        val stockCopyOrigin = stockMock.copy(id = UUID.randomUUID().toString(), quantity = 10)
+        val stockCopyDestination = stockMock.copy(id = UUID.randomUUID().toString())
+        val quantity = 100L
+
+        val exception: ResponseStatusException = assertThrows(ResponseStatusException::class.java) {
+            service.moveStock(stockCopyOrigin, stockCopyDestination, quantity)
+        }
+
+        assertThat(exception.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(exception.reason).isEqualTo("Insufficient stock: available 10")
+
+        verifyNoInteractions(repository)
+    }
+
+    @Test
+    fun `should move quantity between 2 stocks`() {
+        val stockOrigin = stockMock.copy(id = UUID.randomUUID().toString(), quantity = 110)
+        val stockDestination = stockMock.copy(id = UUID.randomUUID().toString(), quantity = 110)
+        val quantity = 100L
+
+        val stockOriginAfter = stockOrigin.copy(quantity = stockOrigin.quantity - quantity)
+        val stockDestinationAfter = stockDestination.copy(quantity = stockDestination.quantity + quantity)
+
+        whenever(repository.save(stockOrigin)).thenReturn(stockOriginAfter)
+        whenever(repository.save(stockDestination)).thenReturn(stockDestinationAfter)
+
+        val result: Map<Int, Stock> = service.moveStock(stockOrigin, stockDestination, quantity)
+
+        assertThat(result[0]?.quantity).isEqualTo(stockOriginAfter.quantity)
+        assertThat(result[1]?.quantity).isEqualTo(stockDestinationAfter.quantity)
+
+        val inOrder = inOrder(repository)
+        inOrder.verify(repository).save(stockOrigin)
+        inOrder.verify(repository).save(stockDestination)
+        verifyNoMoreInteractions(repository)
+    }
 
     @Test
     fun `should get the stock`() {
