@@ -9,17 +9,16 @@ import java.time.LocalDate
 
 data class PurchaseOrderItem(
     @Id
-    var id: String,
+    var id: String? = null,
     var purchaseOrderId: String,
-    var productId: String,
-    var quantity: Integer,
-    var unitPrice: BigDecimal,
-    var subtotal: BigDecimal,
-    var receivedQuantity: Integer,
+    var productId: String = "",
+    var quantity: Integer? = null,
+    var unitPrice: BigDecimal? = null,
+    var receivedQuantity: Integer? = null,
     @Version
-    var version: Long,
+    var version: Long = 0,
     @CreatedDate
-    var createdAt: LocalDate,
+    var createdAt: LocalDate? = null,
     @LastModifiedDate
-    var updatedAt: LocalDate
+    var updatedAt: LocalDate? = null
 )
