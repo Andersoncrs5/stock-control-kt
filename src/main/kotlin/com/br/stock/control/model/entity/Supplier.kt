@@ -19,7 +19,7 @@ data class Supplier(
     var status: SupplierStatusEnum = SupplierStatusEnum.ACTIVE,
     var type: SupplierTypeEnum? = null,
     var rating: Int? = null,
-    var categoriesId: List<String>? = null,
+    var categoriesId: MutableList<String> = mutableListOf(),
     var createdBy: String? = null,
     var isPreferred: Boolean = false,
     @Version
@@ -27,5 +27,5 @@ data class Supplier(
     @CreatedDate
     var createdAt: LocalDate? = null,
     @LastModifiedDate
-    var updatedAt: LocalDate?
+    var updatedAt: LocalDate? = null
 )
