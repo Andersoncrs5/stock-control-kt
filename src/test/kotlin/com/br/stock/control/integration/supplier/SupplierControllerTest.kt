@@ -217,7 +217,7 @@ class SupplierControllerTest {
         val supplier = createSupplier(responseToken, user, categories)
 
         val mvcResult = mockMvc.perform(
-            get(this.urlSupplier)
+            get(this.urlSupplier+"/me")
                 .header("Authorization", "Bearer ${responseToken.token}"))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk).andReturn()
@@ -275,8 +275,11 @@ class SupplierControllerTest {
         )
         
         val mvcResult = mockMvc.perform(
-            delete(this.urlSupplier)
-                .header("Authorization", "Bearer ${responseToken.token}"))
+            put(this.urlSupplier)
+                .header("Authorization", "Bearer ${responseToken.token}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(dto))
+        )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk).andReturn()
 
@@ -293,5 +296,30 @@ class SupplierControllerTest {
         assertThat(response.body.type).isEqualTo(dto.type).withFailMessage("type is different")
         assertThat(response.body.rating).isEqualTo(dto.rating).withFailMessage("rating is different")
     }
-    
+
+    @Test
+    fun `should change status isPreferred`() {
+        val responseToken: ResponseToken = createUserAndLog()
+        val responseToken2: ResponseToken = createUserAndLog()
+        val user: UserDTO = getUser(responseToken.token)
+        val categories = (1..5).map { createCategory(responseToken.token).id }.toMutableList()
+        val supplier = createSupplier(responseToken, user, categories)
+
+        val mvcResult = mockMvc.perform(
+            put("${this.urlSupplier}/${supplier.userId}/status/preferred")
+                .header("Authorization", "Bearer ${responseToken2.token}")
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val response: ResponseBody<Supplier> = objectMapper.convertValue(
+            objectMapper.readTree(mvcResult.response.contentAsString),
+            object : TypeReference<ResponseBody<Supplier>>() {}
+        )
+
+        assertThat(response.message).isEqualTo("Status preferred changed").withFailMessage("Message is different")
+        assertThat(response.body.isPreferred).isTrue.withFailMessage("Preferred is false")
+    }
+
 }
