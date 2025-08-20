@@ -93,7 +93,7 @@ class StockService(
     }
 
     @Transactional
-    fun v(
+    fun moveStock(
         stockOrigin: Stock, stockDestination: Stock, quantity: Long
     ): Map<Int, Stock> {
         if (quantity > stockOrigin.quantity) {
