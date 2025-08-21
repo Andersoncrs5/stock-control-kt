@@ -6,5 +6,6 @@ enum class StatusEnum {
     SHIPPED,
     RECEIVED,
     CANCELLED,
+    APPROVED,
     NONE
 }
