@@ -28,7 +28,7 @@ class TokenService {
 
     fun generateToken(user: User): String {
         logger.debug("Generating token...")
-        if (secret == null || secret.isBlank()) {
+        if (secret.isNullOrEmpty()) {
             logger.error("secret key came null")
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null")
         }
@@ -55,10 +55,10 @@ class TokenService {
         logger.debug("Generating refreshToken...")
         if (secret == null || secret.isBlank()) {
             logger.error("Error the generate refreshToken! secret came null")
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null");
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null")
         }
 
-
+        logger.debug("Setting claims to refreshToken..")
         val claimsSet: JWTClaimsSet = JWTClaimsSet.Builder()
             .subject(user.email)
             .claim("userId", user.id)
@@ -66,42 +66,55 @@ class TokenService {
             .issueTime(Date.from(Instant.now()))
             .expirationTime(Date.from(this.genExpirationDateRefreshToken()))
             .claim("roles", user.roles.map { it.name }.toList())
-            .build();
+            .build()
 
         val header: JWSHeader = JWSHeader(JWSAlgorithm.HS256)
-        val signedJWT: SignedJWT = SignedJWT(header, claimsSet);
+        val signedJWT: SignedJWT = SignedJWT(header, claimsSet)
         signedJWT.sign(MACSigner(secret.toByteArray()))
 
-        return signedJWT.serialize();
+        return signedJWT.serialize()
     }
 
     fun validateToken(token: String): String {
-        if (token.isBlank())
+        logger.debug("Validating token...")
+        if (token.isBlank()) {
+            logger.debug("Token is null! returning ResponseStatusException")
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        }
 
+        if (secret.isNullOrEmpty()) {
+            logger.error("secret key came null in validateToken")
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Secret key is null")
+        }
+
+        logger.debug("Validating token")
         val signedJWT: SignedJWT = SignedJWT.parse(token)
-        val verifier = MACVerifier(secret?.toByteArray())
+        val verifier = MACVerifier(secret.toByteArray())
 
         if (!signedJWT.verify(verifier)) {  throw ResponseStatusException(HttpStatus.UNAUTHORIZED)  }
 
-        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet;
+        val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
         if (claimSet.expirationTime.before(Date.from(Instant.now()))) { throw ResponseStatusException(HttpStatus.UNAUTHORIZED) }
 
         return claimSet.subject
     }
 
     private fun genExpirationDate(): Instant {
+        logger.debug("getting ExpirationDate to token")
         return LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.of("-03:00"))
     }
 
     private fun genExpirationDateRefreshToken(): Instant {
+        logger.debug("getting ExpirationDate to refreshToken")
         return LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.of("-03:00"))
     }
 
     fun extractAllClaims(token: String): Map<String, Any> {
+        logger.debug("extracting All Claims of token")
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
 
+        logger.debug("Returning claims")
         return claimSet.claims
     }
 
@@ -116,8 +129,13 @@ class TokenService {
     }
 
     fun extractUserId(request: HttpServletRequest): String {
+        logger.debug("Extracting userId of token")
         val authHeader = request.getHeader("Authorization")
         val token = authHeader.substring(7)
+
+        if (token.isBlank()) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        }
 
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
@@ -128,6 +146,10 @@ class TokenService {
     fun extractName(request: HttpServletRequest): String {
         val authHeader = request.getHeader("Authorization")
         val token = authHeader.substring(7)
+
+        if (token.isBlank()) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        }
 
         val signedJWT: SignedJWT = SignedJWT.parse(token)
         val claimSet: JWTClaimsSet = signedJWT.jwtClaimsSet
