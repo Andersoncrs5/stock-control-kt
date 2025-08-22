@@ -62,7 +62,7 @@ class PurchaseOrderService(
     }
 
     @Transactional
-    fun approveOrder(order: PurchaseOrder, approvedBy: String): PurchaseOrder {
+    fun approvedOrder(order: PurchaseOrder, approvedBy: String): PurchaseOrder {
         this.logger.debug("Changing status order to APPROVE")
 
         if (order.status == StatusEnum.CANCELLED) {
