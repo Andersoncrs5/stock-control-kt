@@ -38,6 +38,13 @@ class PurchaseOrderItemService(
     }
 
     @Transactional
+    fun deleteManyByPurchaseOrderId(id: String) {
+        logger.debug("Deleting many PurchaseOrderItem by purchaseOrderId")
+        this.repository.deleteAllByPurchaseOrderId(id)
+        logger.debug("Many PurchaseOrderItem deleted by purchaseOrderId")
+    }
+
+    @Transactional
     fun create(item: PurchaseOrderItem): PurchaseOrderItem {
         this.logger.debug("Creating new purchaseOrderItem")
         item.createdAt = LocalDate.now()
