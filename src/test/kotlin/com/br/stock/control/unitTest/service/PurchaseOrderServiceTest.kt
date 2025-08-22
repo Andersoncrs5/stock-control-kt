@@ -134,7 +134,7 @@ class PurchaseOrderServiceTest {
     fun `should throw ResponseStatusException in approveOrder`() {
         val orderCopy = orderMock.copy(status = StatusEnum.CANCELLED)
         val exception = assertThrows(ResponseStatusException::class.java) {
-            this.service.approveOrder(orderCopy, UUID.randomUUID().toString())
+            this.service.approvedOrder(orderCopy, UUID.randomUUID().toString())
         }
 
         assertThat(exception.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
@@ -152,7 +152,7 @@ class PurchaseOrderServiceTest {
         whenever(repository.save(order))
             .thenReturn(order.copy(status = StatusEnum.APPROVED, approvedByUserId = approvedByUserId))
 
-        val result = service.approveOrder(order, approvedByUserId)
+        val result = service.approvedOrder(order, approvedByUserId)
 
         assertThat(result.status).isEqualTo(StatusEnum.APPROVED)
             .withFailMessage("StatusEnum are different")
@@ -172,7 +172,7 @@ class PurchaseOrderServiceTest {
         val order = orderMock.copy(status = StatusEnum.CANCELLED)
 
         val ex = assertThrows<ResponseStatusException> {
-            service.approveOrder(order, "user-123")
+            service.approvedOrder(order, "user-123")
         }
 
         assertThat(ex.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
