@@ -2,15 +2,7 @@ package com.br.stock.control.util.facades
 
 import com.br.stock.control.config.security.service.CryptoService
 import com.br.stock.control.config.security.service.TokenService
-import com.br.stock.control.service.AddressService
-import com.br.stock.control.service.CategoryService
-import com.br.stock.control.service.ProductService
-import com.br.stock.control.service.RedisService
-import com.br.stock.control.service.StockMovementService
-import com.br.stock.control.service.StockService
-import com.br.stock.control.service.SupplierService
-import com.br.stock.control.service.UserService
-import com.br.stock.control.service.WareHouseService
+import com.br.stock.control.service.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -25,6 +17,8 @@ class FacadeServices(
     val addressService: AddressService,
     val stockMovementService: StockMovementService,
     val stockService: StockService,
-    val supplierService: SupplierService
+    val supplierService: SupplierService,
+    val purchaseOrderItemService: PurchaseOrderItemService,
+    val purchaseOrderService: PurchaseOrderService,
 ) {
 }
