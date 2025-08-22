@@ -12,12 +12,13 @@ data class PurchaseOrderItem(
     var id: String? = null,
     var purchaseOrderId: String,
     var productId: String = "",
-    var quantity: Integer? = null,
-    var unitPrice: BigDecimal? = null,
-    var receivedQuantity: Integer? = null,
+    var quantity: Int = 0,
+    var unitPrice: BigDecimal = BigDecimal.valueOf(0.0),
+    var expectedQuantity: Int = 0,
+    var backOrderedQuantity: Int = 0,
+    var receivedQuantity: Int = 0,
     @Version
     var version: Long = 0,
-    @CreatedDate
     var createdAt: LocalDate? = null,
     @LastModifiedDate
     var updatedAt: LocalDate? = null
