@@ -1,4 +1,13 @@
 spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+
   application:
     name: stock.control
 
@@ -44,9 +53,6 @@ spring:
       host: 127.0.0.1
       port: 27017
       database: stock_control_db
-#      username:
-#      password:
-#      authentication-database:
 
   redis:
     host: localhost
