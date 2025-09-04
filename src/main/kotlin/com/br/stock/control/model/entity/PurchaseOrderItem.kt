@@ -9,7 +9,7 @@ import java.time.LocalDate
 data class PurchaseOrderItem(
     @Id
     var id: String? = null,
-    var purchaseOrderId: String,
+    var purchaseOrderId: String = "",
     var productId: String = "",
     var quantity: Int = 0,
     var unitPrice: BigDecimal = BigDecimal.valueOf(0.0),
