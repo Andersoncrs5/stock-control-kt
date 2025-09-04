@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 data class Contact(
     @Id
-    var id: String? = null,
+    var userId: String? = null,
     var secondaryEmail: String? = null,
     var phone: String? = null,
     var secondaryPhone: String? = null,
