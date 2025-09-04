@@ -104,7 +104,6 @@ class PurchaseOrderItemServiceTest {
 
     @Test fun `should update PurchaseOrderItem`() {
         val dto = UpdateOrderItemDTO(
-            productId = UUID.randomUUID().toString(),
             quantity = 3456,
             unitPrice = BigDecimal.valueOf(77.9),
             expectedQuantity = 3456,
@@ -113,7 +112,6 @@ class PurchaseOrderItemServiceTest {
         )
 
         val itemCopy = itemMock.copy(
-            productId = dto.productId,
             quantity = dto.quantity,
             unitPrice = dto.unitPrice,
             expectedQuantity = dto.expectedQuantity,
@@ -130,8 +128,6 @@ class PurchaseOrderItemServiceTest {
 
         assertThat(orderItem).isNotNull
             .withFailMessage("Order is null")
-        assertThat(orderItem.productId).isEqualTo(dto.productId)
-            .withFailMessage("productId are different")
         assertThat(orderItem.quantity).isEqualTo(dto.quantity)
             .withFailMessage("quantity are different")
         assertThat(orderItem.unitPrice).isEqualByComparingTo(dto.unitPrice)
