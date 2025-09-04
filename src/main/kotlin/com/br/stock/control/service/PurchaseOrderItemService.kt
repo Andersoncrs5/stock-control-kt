@@ -4,8 +4,11 @@ import com.br.stock.control.model.dto.purchaseOrderItem.UpdateOrderItemDTO
 import com.br.stock.control.model.entity.PurchaseOrderItem
 import com.br.stock.control.repository.PurchaseOrderItemRepository
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.Optional
 
@@ -21,6 +24,44 @@ class PurchaseOrderItemService(
         val opt: Optional<PurchaseOrderItem> = this.repository.findById(id)
         logger.debug("Returning purchaseOrderItem")
         return opt
+    }
+
+    @Transactional(readOnly = true)
+    fun findAll(
+        purchaseOrderId: String?,
+        productId: String?,
+        minQuantity: Int?,
+        maxQuantity: Int?,
+        minExpectedQuantity: Int?,
+        maxExpectedQuantity: Int?,
+        minBackOrderedQuantity: Int?,
+        maxBackOrderedQuantity: Int?,
+        minReceivedQuantity: Int?,
+        maxReceivedQuantity: Int?,
+        minUnitPrice: BigDecimal?,
+        maxUnitPrice: BigDecimal?,
+        createdAtBefore: LocalDate?,
+        createdAtAfter: LocalDate?,
+        pageable: Pageable
+    ): Page<PurchaseOrderItem> {
+        return this.repository
+            .findAll(
+                purchaseOrderId,
+                productId,
+                minQuantity,
+                maxQuantity,
+                minExpectedQuantity,
+                maxExpectedQuantity,
+                minBackOrderedQuantity,
+                maxBackOrderedQuantity,
+                minReceivedQuantity,
+                maxReceivedQuantity,
+                minUnitPrice,
+                maxUnitPrice,
+                createdAtBefore,
+                createdAtAfter,
+                pageable
+            )
     }
 
     @Transactional
@@ -56,7 +97,6 @@ class PurchaseOrderItemService(
     @Transactional
     fun update(item: PurchaseOrderItem, dto: UpdateOrderItemDTO): PurchaseOrderItem {
         logger.debug("Updating purchaseOrderItem by id: ${item.id}")
-        item.productId = dto.productId
         item.quantity = dto.quantity
         item.unitPrice = dto.unitPrice
         item.expectedQuantity = dto.expectedQuantity
