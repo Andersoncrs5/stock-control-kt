@@ -14,12 +14,12 @@ spring:
   resilience4j.ratelimiter:
     instances:
       createApiRateLimiter:
-        limitForPeriod: 30
+        limitForPeriod: 40
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
       updateApiRateLimiter:
-        limitForPeriod: 20
+        limitForPeriod: 25
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
@@ -29,22 +29,22 @@ spring:
         timeoutDuration: 0s
 
       deleteApiRateLimiter:
-        limitForPeriod: 40
+        limitForPeriod: 50
         limitRefreshPeriod: 10s
         timeoutDuration: 0s
 
       readApiRateLimiter:
-        limitForPeriod: 50
+        limitForPeriod: 70
         limitRefreshPeriod: 8s
         timeoutDuration: 0s
 
       basicApiRateLimiter:
-        limitForPeriod: 40
+        limitForPeriod: 50
         limitRefreshPeriod: 8s
         timeoutDuration: 0s
 
       criticalApiRateLimiter:
-        limitForPeriod: 15
+        limitForPeriod: 20
         limitRefreshPeriod: 5s
         timeoutDuration: 0s
 
