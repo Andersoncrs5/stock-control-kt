@@ -30,6 +30,13 @@ class AddressService(
     }
 
     @Transactional
+    fun deleteById(id: String) {
+        logger.debug("Deleting by id address")
+        this.repository.deleteById(id)
+        logger.debug("Address by id deleted")
+    }
+
+    @Transactional
     fun deleteMany(ids: List<String>) {
         logger.debug("Deleting many address")
         this.repository.deleteAllById(ids)
