@@ -4,6 +4,7 @@ import com.br.stock.control.util.mappers.address.CreateAddressMapper
 import com.br.stock.control.util.mappers.address.UpdateAddressMapper
 import com.br.stock.control.util.mappers.category.CreateCategoryMapper
 import com.br.stock.control.util.mappers.category.UpdateCategoryMapper
+import com.br.stock.control.util.mappers.contact.CreateContactMapper
 import com.br.stock.control.util.mappers.product.CreateProductMapper
 import com.br.stock.control.util.mappers.purchaseOrder.CreateOrderMapper
 import com.br.stock.control.util.mappers.purchaseOrderItem.CreatePurchaseOrderItemMapper
@@ -27,6 +28,6 @@ class FacadeMappers(
     val createStockMoveMapper: CreateStockMoveMapper,
     val createSupplierMapper: CreateSupplierMapper,
     val createOrderMapper: CreateOrderMapper,
-    val createPurchaseOrderItemMapper: CreatePurchaseOrderItemMapper
-) {
-}
+    val createPurchaseOrderItemMapper: CreatePurchaseOrderItemMapper,
+    val createContactMapper: CreateContactMapper
+)

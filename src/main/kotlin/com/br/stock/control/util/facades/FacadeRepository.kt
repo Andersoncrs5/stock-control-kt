@@ -2,6 +2,7 @@ package com.br.stock.control.util.facades
 
 import com.br.stock.control.repository.AddressRepository
 import com.br.stock.control.repository.CategoryRepository
+import com.br.stock.control.repository.ContactRepository
 import com.br.stock.control.repository.ProductRepository
 import com.br.stock.control.repository.PurchaseOrderItemRepository
 import com.br.stock.control.repository.PurchaseOrderRepository
@@ -24,5 +25,6 @@ class FacadeRepository(
     val supplierRepository: SupplierRepository,
     val purchaseOrderRepository: PurchaseOrderRepository,
     val purchaseOrderItemRepository: PurchaseOrderItemRepository,
+    val contactRepository: ContactRepository
 ) {
 }
