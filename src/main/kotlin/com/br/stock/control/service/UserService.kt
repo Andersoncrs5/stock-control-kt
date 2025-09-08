@@ -4,8 +4,11 @@ import com.br.stock.control.model.dto.user.UpdateUserDTO
 import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.UserRepository
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.Optional
 
 @Service
@@ -112,6 +115,35 @@ class UserService(
     @Transactional(readOnly = true)
     fun existsById(id: String): Boolean {
         return this.repository.existsById(id)
+    }
+
+    @Transactional(readOnly = true)
+    fun getAll(
+        name: String?,
+        email: String?,
+        fullName: String?,
+        accountNonExpired: Boolean?,
+        credentialsNonExpired: Boolean?,
+        accountNonLocked: Boolean?,
+        createdAtBefore: LocalDate?,
+        createdAtAfter: LocalDate?,
+        pageable: Pageable,
+        roleName: String?,
+    ): Page<User> {
+        val fetch = this.repository.findAll(
+            name,
+            email,
+            fullName,
+            accountNonExpired,
+            credentialsNonExpired,
+            accountNonLocked,
+            createdAtBefore,
+            createdAtAfter,
+            pageable,
+            roleName
+        )
+
+        return fetch
     }
 
 }
