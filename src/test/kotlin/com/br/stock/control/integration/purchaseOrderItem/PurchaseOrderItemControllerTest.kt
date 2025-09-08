@@ -57,6 +57,7 @@ class PurchaseOrderItemControllerTest {
     @BeforeEach fun setup() {
         this.facadeRepository.userRepository.deleteAll()
         this.facadeRepository.supplierRepository.deleteAll()
+        this.facadeRepository.categoryRepository.deleteAll()
         this.facadeRepository.purchaseOrderRepository.deleteAll()
         this.facadeRepository.purchaseOrderItemRepository.deleteAll()
     }
@@ -286,7 +287,7 @@ class PurchaseOrderItemControllerTest {
         val supplier = createSupplier(responseToken, userDTO, listOf(category.id) as MutableList<String>)
 
         val responseToken1 = createUserAndLog()
-        val userDTO1 = getUser(responseToken)
+        getUser(responseToken)
         val product = createProduct(responseToken1)
         val createOrder = createOrder(supplier, responseToken1)
 
@@ -351,7 +352,7 @@ class PurchaseOrderItemControllerTest {
         val supplier = createSupplier(responseToken, userDTO, listOf(category.id) as MutableList<String>)
 
         val responseToken1 = createUserAndLog()
-        val userDTO1 = getUser(responseToken)
+        getUser(responseToken)
         val product = createProduct(responseToken1)
         val createOrder = createOrder(supplier, responseToken1)
         val orderItem = createOrderItem(product, createOrder, responseToken1)
@@ -395,7 +396,7 @@ class PurchaseOrderItemControllerTest {
         val supplier = createSupplier(responseToken, userDTO, listOf(category.id) as MutableList<String>)
 
         val responseToken1 = createUserAndLog()
-        val userDTO1 = getUser(responseToken)
+        getUser(responseToken)
         val product = createProduct(responseToken1)
         val createOrder = createOrder(supplier, responseToken1)
         val orderItem = createOrderItem(product, createOrder, responseToken1)
@@ -414,7 +415,7 @@ class PurchaseOrderItemControllerTest {
             .isEqualTo("PurchaseOrderItem deleted")
             .withFailMessage("Return message is different")
 
-        val mvcResult1 = mockMvc.perform(
+        mockMvc.perform(
             get(this.urlOrderItem + "/${orderItem.id}")
                 .header("Authorization", "Bearer ${responseToken1.token}"))
             .andExpect(status().isNotFound).andReturn()
@@ -427,7 +428,7 @@ class PurchaseOrderItemControllerTest {
         val supplier = createSupplier(responseToken, userDTO, listOf(category.id) as MutableList<String>)
 
         val responseToken1 = createUserAndLog()
-        val userDTO1 = getUser(responseToken1)
+        getUser(responseToken1)
         val product = createProduct(responseToken1)
         val createOrder = createOrder(supplier, responseToken1)
         val orderItem = createOrderItem(product, createOrder, responseToken1)
