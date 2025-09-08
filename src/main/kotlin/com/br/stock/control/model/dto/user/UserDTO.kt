@@ -8,5 +8,4 @@ class UserDTO(
     var email: String= "",
     var fullName: String= "",
     var createdAt: LocalDate? = null
-) {
-}
+)
