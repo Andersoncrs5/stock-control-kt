@@ -14,6 +14,4 @@ data class Role(
     var description: String?,
     @CreatedDate
     var createdAt: LocalDate,
-    @LastModifiedDate
-    var updatedAt: LocalDate
 )
