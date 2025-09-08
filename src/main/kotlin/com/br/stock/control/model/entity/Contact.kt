@@ -17,5 +17,5 @@ data class Contact(
     @CreatedDate
     var createdAt: LocalDate = LocalDate.now(),
     @LastModifiedDate
-    var updatedAt: LocalDate = LocalDate.now()
+    var updatedAt: LocalDate? = null
 )
