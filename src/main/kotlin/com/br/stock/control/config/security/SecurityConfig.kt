@@ -1,5 +1,6 @@
 package com.br.stock.control.config.security
 
+import com.br.stock.control.service.CustomUserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -58,6 +59,11 @@ class SecurityConfig(
         provider.setUserDetailsService(userDetailsService)
         provider.setPasswordEncoder(passwordEncoder)
         return provider
+    }
+
+    @Bean
+    fun userDetailsService(): UserDetailsService {
+        return CustomUserDetailsService()
     }
 
     @Bean
