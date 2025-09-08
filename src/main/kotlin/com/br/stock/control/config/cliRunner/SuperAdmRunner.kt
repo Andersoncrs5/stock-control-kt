@@ -36,7 +36,7 @@ class SuperAdmRunner(
 
         val user = User(
             id = UUID.randomUUID().toString(),
-            name = "Super Admin",
+            name = "SuperAdmin",
             email = email,
             passwordHash = passwordEncoded,
             fullName = "super admin",
@@ -55,6 +55,7 @@ class SuperAdmRunner(
         facadeRepository.userRepository.save(user)
 
         println("\nSuper admin created with successfully!")
+        println("Name: ${user.name}")
         println("Email: $email")
         println("Password: $passwordPlain\n")
     }
