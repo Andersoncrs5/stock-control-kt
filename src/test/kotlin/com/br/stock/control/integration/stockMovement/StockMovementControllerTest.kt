@@ -332,7 +332,7 @@ class StockMovementControllerTest {
     fun `should create new stock move`() {
         val responseToken: ResponseToken = createUserAndLog()
         val warehouse = createWareHouse(responseToken)
-        val category: Category = createCategory(responseToken.token)
+        createCategory(responseToken.token)
         val user: UserDTO = this.getUser(responseToken.token)
         val product: Product = this.createProduct(responseToken)
         val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
@@ -381,7 +381,7 @@ class StockMovementControllerTest {
     fun `should get stock move`() {
         val responseToken: ResponseToken = createUserAndLog()
         val warehouse = createWareHouse(responseToken)
-        val category: Category = createCategory(responseToken.token)
+        createCategory(responseToken.token)
         val user: UserDTO = this.getUser(responseToken.token)
         val product: Product = this.createProduct(responseToken)
         val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)
@@ -416,7 +416,7 @@ class StockMovementControllerTest {
     fun `should delete move`() {
         val responseToken: ResponseToken = createUserAndLog()
         val warehouse = createWareHouse(responseToken)
-        val category: Category = createCategory(responseToken.token)
+        createCategory(responseToken.token)
         val user: UserDTO = this.getUser(responseToken.token)
         val product: Product = this.createProduct(responseToken)
         val stock: Stock = this.createStock(responseToken, product.id, user.id, warehouse.id)

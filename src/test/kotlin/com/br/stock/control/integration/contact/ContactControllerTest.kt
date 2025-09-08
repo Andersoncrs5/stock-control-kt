@@ -171,7 +171,7 @@ class ContactControllerTest {
 
     @Test fun `should get contact`() {
         val responseToken = createUserAndLog()
-        val userDTO = getUser(responseToken)
+        getUser(responseToken)
         val contact = createContact(responseToken)
 
         val mvcResult = mockMvc.perform(
@@ -253,8 +253,8 @@ class ContactControllerTest {
 
     @Test fun `should delete contact`() {
         val responseToken = createUserAndLog()
-        val userDTO = getUser(responseToken)
-        val contact = createContact(responseToken)
+        getUser(responseToken)
+        createContact(responseToken)
 
         val mvcResult = mockMvc.perform(
             delete(this.urlContact)
@@ -282,7 +282,7 @@ class ContactControllerTest {
         val responseToken = createUserAndLog()
         val userDTO = getUser(responseToken)
 
-        val contact = createContact(responseToken)
+        createContact(responseToken)
 
         val updateDto = UpdateContactDTO(
             secondaryEmail = "updated${Random.nextLong(1000000)}@gmail.com",

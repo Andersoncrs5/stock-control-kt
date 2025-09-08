@@ -68,7 +68,7 @@ class ContactServiceTest {
     fun `should delete contact`() {
         doNothing().whenever(repository).delete(contact)
 
-        val result = this.service.delete(contact)
+        this.service.delete(contact)
 
         verify(repository, times(1)).delete(contact)
         verifyNoMoreInteractions(repository)

@@ -206,8 +206,8 @@ class PurchaseOrderControllerTest {
     @Test fun `should create new order`() {
         val responseToken: ResponseToken = createUserAndLog()
         val responseToken1: ResponseToken = createUserAndLog()
-        
-        val user: UserDTO = getUser(responseToken.token)
+
+        getUser(responseToken.token)
         val user1: UserDTO = getUser(responseToken1.token)
         
         val categories = (1..5).map { createCategory(responseToken.token).id } as MutableList<String>
@@ -259,7 +259,7 @@ class PurchaseOrderControllerTest {
         val responseToken: ResponseToken = createUserAndLog()
         val responseToken1: ResponseToken = createUserAndLog()
 
-        val user: UserDTO = getUser(responseToken.token)
+        getUser(responseToken.token)
         val user1: UserDTO = getUser(responseToken1.token)
 
         val categories = (1..5).map { createCategory(responseToken.token).id } as MutableList<String>
@@ -295,7 +295,7 @@ class PurchaseOrderControllerTest {
         val responseToken: ResponseToken = createUserAndLog()
         val responseToken1: ResponseToken = createUserAndLog()
 
-        val user: UserDTO = getUser(responseToken.token)
+        getUser(responseToken.token)
         val user1: UserDTO = getUser(responseToken1.token)
 
         val categories = (1..5).map { createCategory(responseToken.token).id } as MutableList<String>
@@ -424,7 +424,7 @@ class PurchaseOrderControllerTest {
         val responseToken: ResponseToken = createUserAndLog()
         val responseToken1: ResponseToken = createUserAndLog()
 
-        val user: UserDTO = getUser(responseToken.token)
+        getUser(responseToken.token)
         val user1: UserDTO = getUser(responseToken1.token)
 
         val categories = (1..5).map { createCategory(responseToken.token).id } as MutableList<String>

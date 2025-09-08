@@ -52,7 +52,7 @@ class ProductServiceTest {
     fun `should getProduct`() {
         whenever(repository.findById(product.id)).thenReturn(Optional.of<Product>(product))
 
-        val result = service.get(product.id);
+        val result = service.get(product.id)
 
         assertNotNull(result, "Result of productService getProduct came null")
         assertEquals(result.id, product.id, "IDs of products are different")

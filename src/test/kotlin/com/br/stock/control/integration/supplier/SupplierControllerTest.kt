@@ -242,7 +242,7 @@ class SupplierControllerTest {
         val responseToken: ResponseToken = createUserAndLog()
         val user: UserDTO = getUser(responseToken.token)
         val categories = (1..5).map { createCategory(responseToken.token).id } as MutableList<String>
-        val supplier = createSupplier(responseToken, user, categories)
+        createSupplier(responseToken, user, categories)
 
         val mvcResult = mockMvc.perform(
             delete(this.urlSupplier)

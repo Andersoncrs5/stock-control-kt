@@ -10,7 +10,7 @@ class CreateStockMapper(
     private val mapper: Mapper
 ) {
     fun toDTO(stock: Stock): CreateStockDTO {
-        return this.mapper.map(stock, CreateStockDTO::class.java);
+        return this.mapper.map(stock, CreateStockDTO::class.java)
     }
 
     fun toStock(dto: CreateStockDTO): Stock {

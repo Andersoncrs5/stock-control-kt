@@ -5,6 +5,8 @@ import com.br.stock.control.model.entity.User
 import com.br.stock.control.repository.RoleRepository
 import com.br.stock.control.repository.UserRepository
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.Optional

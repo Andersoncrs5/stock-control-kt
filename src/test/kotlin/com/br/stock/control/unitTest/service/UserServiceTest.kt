@@ -98,7 +98,7 @@ class UserServiceTest {
 
     @Test
     fun `should update user`() {
-        val userId = UUID.randomUUID().toString();
+        val userId = UUID.randomUUID().toString()
         val userBefore = user.copy(id = userId, name = "update")
         val userAfter = user.copy(id = userId, name = "update")
 
@@ -243,7 +243,7 @@ class UserServiceTest {
         val userCopy = user.copy(accountNonExpired = true)
         whenever(userRepository.save(user)).thenReturn(userCopy)
 
-        val result: User = this.userService.changeStatusAccountNonExpired(user);
+        val result: User = this.userService.changeStatusAccountNonExpired(user)
 
         assertThat(result).isNotNull
         assertThat(result.accountNonExpired).isEqualTo(user.accountNonExpired)

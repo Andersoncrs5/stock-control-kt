@@ -7,5 +7,4 @@ data class ResponseToken(
     val refreshToken: String,
     val expireAtToken: LocalDateTime,
     val expireAtRefreshToken: LocalDateTime
-) {
-}
+)
