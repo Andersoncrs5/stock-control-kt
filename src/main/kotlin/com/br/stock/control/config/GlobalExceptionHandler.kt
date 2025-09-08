@@ -30,7 +30,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException::class)
     fun handleResponseStatus(request: HttpServletRequest, ex: ResponseStatusException): ResponseEntity<MutableMap<String, Any?>?> {
-        val response: MutableMap<String, Any?> = HashMap();
+        val response: MutableMap<String, Any?> = HashMap()
 
         response.put("timestamp", LocalDateTime.now())
         response.put("status", ex.statusCode)
@@ -46,8 +46,8 @@ class GlobalExceptionHandler {
     fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<MutableMap<String?, String?>?> {
         val errors: MutableMap<String?, String?> = HashMap<String?, String?>()
 
-        for (error in ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage())
+        for (error in ex.bindingResult.fieldErrors) {
+            errors.put(error.field, error.defaultMessage)
         }
 
         return ResponseEntity.badRequest().body<MutableMap<String?, String?>?>(errors)
