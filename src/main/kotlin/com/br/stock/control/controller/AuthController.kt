@@ -52,6 +52,15 @@ class AuthController(
             )
         }
 
+        if (dto.email == "admin@gmail.com") {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseBody(
+                    LocalDateTime.now(), "Email admin@gmail.com is not available",
+                    request.requestURI, request.method, null
+                )
+            )
+        }
+
         val user: User = this.mapper.toUser(dto)
 
         user.passwordHash = this.facade.cryptoService.encoderPassword(user.passwordHash)
