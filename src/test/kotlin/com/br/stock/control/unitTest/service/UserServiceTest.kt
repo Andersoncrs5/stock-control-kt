@@ -49,7 +49,6 @@ class UserServiceTest {
                 id = UUID.randomUUID().toString(),
                 description = "",
                 createdAt = LocalDate.now(),
-                updatedAt = LocalDate.now()
             )
         ),
         contact = List(5) { UUID.randomUUID().toString() },
