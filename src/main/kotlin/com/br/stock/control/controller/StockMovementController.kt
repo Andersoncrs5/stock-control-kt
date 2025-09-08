@@ -112,7 +112,7 @@ class StockMovementController(
         val stock = optional.get()
         val move: StockMovement = this.facadeMappers.createStockMoveMapper.toStockMovement(dto)
 
-        val adjustQuantity: Stock = this.facadeServices.stockService.adjustQuantity(stock, move)
+        this.facadeServices.stockService.adjustQuantity(stock, move)
 
         val save = this.facadeServices.stockMovementService.create(move)
 
