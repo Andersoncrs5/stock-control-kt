@@ -29,9 +29,11 @@ class AuthController(
 
     @PostMapping("/register")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun register(@Valid @RequestBody dto: RegisterUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<UserDTO?>> {
+    fun register(
+        @Valid @RequestBody dto: RegisterUserDTO,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<UserDTO?>> {
         val existsByEmail = this.facade.userService.existsByEmail(dto.email)
-
         if (existsByEmail) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseBody(
@@ -42,7 +44,6 @@ class AuthController(
         }
 
         val existsByName: Boolean = this.facade.userService.existsByName(dto.name)
-
         if (existsByName) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseBody(
@@ -52,7 +53,8 @@ class AuthController(
             )
         }
 
-        if (dto.email == "admin@gmail.com") {
+        dto.email = dto.email.trim()
+        if (dto.email == "admin@gmail.com" || dto.email.contains("admin", ignoreCase = true)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseBody(
                     LocalDateTime.now(), "Email admin@gmail.com is not available",
@@ -62,14 +64,13 @@ class AuthController(
         }
 
         val user: User = this.mapper.toUser(dto)
-
         user.passwordHash = this.facade.cryptoService.encoderPassword(user.passwordHash)
 
         user.id = UUID.randomUUID().toString()
         user.email = user.email.lowercase().trim()
+        user.accountNonLocked = false
 
         val saveUser: User = this.facade.userService.saveUser(user)
-
         val userDto: UserDTO = this.facadesMappers.userDTOMapper.toDTO(saveUser)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -85,9 +86,11 @@ class AuthController(
 
     @PostMapping("/login")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun login(@Valid @RequestBody dto: LoginUserDTO, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken?>> {
+    fun login(
+        @Valid @RequestBody dto: LoginUserDTO,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<ResponseToken?>> {
         val user = this.facade.userService.getUserByName(dto.name)
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
@@ -107,7 +110,6 @@ class AuthController(
         }
 
         val checkPassword: Boolean = this.facade.cryptoService.verifyPassword(dto.password, user.passwordHash)
-
         if (!checkPassword) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
@@ -133,7 +135,10 @@ class AuthController(
 
     @GetMapping("/refresh-token/{refreshToken}")
     @RateLimiter(name = "authSystemApiRateLimiter")
-    fun refreshToken(@PathVariable refresh: String, request: HttpServletRequest): ResponseEntity<ResponseBody<ResponseToken?>> {
+    fun refreshToken(
+        @PathVariable refresh: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<ResponseToken?>> {
         if (refresh.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseBody(
