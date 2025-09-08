@@ -8,5 +8,4 @@ data class ResponseBody<T>(
     val path: String?,
     val method: String?,
     val body: T,
-    val _links: ArrayList<String>?
 )
