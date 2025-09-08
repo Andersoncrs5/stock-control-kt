@@ -64,7 +64,6 @@ class UserController(
         val userId: String = facades.tokenService.extractUserId(request)
 
         val user: User? = this.facades.userService.get(userId)
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(
@@ -78,6 +77,8 @@ class UserController(
         }
 
         this.facades.redisService.delete(userId)
+        this.facades.addressService.deleteById(userId)
+        this.facades.contactService.deleteById(userId)
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseBody(
