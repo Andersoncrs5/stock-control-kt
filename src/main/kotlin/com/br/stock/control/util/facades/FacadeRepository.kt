@@ -28,5 +28,4 @@ class FacadeRepository(
     val purchaseOrderItemRepository: PurchaseOrderItemRepository,
     val contactRepository: ContactRepository,
     val roleRepository: RoleRepository
-) {
-}
+)

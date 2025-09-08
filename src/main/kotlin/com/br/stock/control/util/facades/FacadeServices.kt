@@ -20,6 +20,6 @@ class FacadeServices(
     val supplierService: SupplierService,
     val purchaseOrderItemService: PurchaseOrderItemService,
     val purchaseOrderService: PurchaseOrderService,
-    val contactService: ContactService
-) {
-}
+    val contactService: ContactService,
+    val rolesService: RoleService
+)
