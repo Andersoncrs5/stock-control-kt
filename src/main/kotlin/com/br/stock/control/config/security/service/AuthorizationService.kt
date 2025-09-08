@@ -12,7 +12,7 @@ class AuthorizationService(
 
     override fun loadUserByUsername(username: String): UserDetails? {
 
-        return userRepository.findByEmail(username);
+        return userRepository.findByEmail(username)
     }
 
 }
