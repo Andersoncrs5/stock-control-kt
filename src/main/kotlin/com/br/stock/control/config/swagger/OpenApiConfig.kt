@@ -20,4 +20,4 @@ import org.springframework.context.annotation.Configuration
     `in` = SecuritySchemeIn.HEADER,
     description = "Token JWT of authentication"
 )
-class OpenApiConfig {}
+class OpenApiConfig
