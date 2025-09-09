@@ -8,4 +8,5 @@ import java.util.Optional
 
 interface CategoryRepository : MongoRepository<Category, String>, CategoryCustomRepository {
     fun findByName(name: String): Optional<Category>
+    fun existsByName(name: String): Boolean
 }
