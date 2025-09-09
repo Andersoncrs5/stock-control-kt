@@ -46,7 +46,6 @@ class ProductController(
         }
 
         val product: Product? = this.facades.productService.get(id)
-
         if (product == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(
@@ -72,26 +71,6 @@ class ProductController(
         @Valid @RequestBody dto: CreateProductDTO,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Product?>> {
-        val bySku = this.facades.productService.getBySku(dto.sku)
-        if(bySku.isPresent) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Sku ${dto.sku} in use!",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
-
-        val byBarcode = this.facades.productService.getByBarcode(dto.barcode)
-        if(byBarcode.isPresent) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Barcode ${dto.barcode} in use!",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
-
         if (categoryId.isBlank()) {
             logger.debug("Id came null")
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -131,9 +110,11 @@ class ProductController(
     @DeleteMapping("/{productId}")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "deleteApiRateLimiter")
-    fun delete(@PathVariable productId: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Product?>> {
+    fun delete(
+        @PathVariable productId: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Product?>> {
         val product: Product? = this.facades.productService.get(productId)
-
         if (product == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(
@@ -156,7 +137,10 @@ class ProductController(
     @DeleteMapping("/{ids}/many")
     @SecurityRequirement(name = "bearerAuth")
     @RateLimiter(name = "deleteApiRateLimiter")
-    fun deleteMany(@PathVariable ids: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String?>> {
+    fun deleteMany(
+        @PathVariable ids: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<String?>> {
         val idList = ids.split(",")
         logger.debug("Deleting many product by id {}", idList)
         this.facades.productService.deleteMany(idList)
@@ -236,7 +220,6 @@ class ProductController(
         }
 
         val product: Product? = this.facades.productService.get(id)
-
         if (product == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(

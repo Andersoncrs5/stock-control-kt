@@ -44,7 +44,10 @@ class CategoryController(
     @GetMapping("/{id}")
     @RateLimiter(name = "readApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun get(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category?>> {
+    fun get(
+        @PathVariable id: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Getting category by id $id")
         if (id.isBlank()) {
             logger.debug("Id came null the get category")
@@ -88,17 +91,6 @@ class CategoryController(
         logger.debug("Creating new category")
         val category: Category = this.facadesMappers.createCategoryMapper.toCategory(dto)
 
-        val byName: Optional<Category> = this.facade.category.getByName(category.name)
-
-        if (byName.isPresent) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Category name already exists!",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
-
         category.id = UUID.randomUUID().toString()
         val result: Category = this.facade.category.save(category)
 
@@ -114,7 +106,9 @@ class CategoryController(
     @GetMapping
     @RateLimiter(name = "readApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun getAll(request: HttpServletRequest): ResponseEntity<ResponseBody<List<Category>>> {
+    fun getAll(
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<List<Category>>> {
         val cached: List<Category>? = facade.redisService.get<List<Category>>("categories")
 
         val categories: List<Category> = cached ?: facade.category.getAll().also {
@@ -135,7 +129,10 @@ class CategoryController(
     @DeleteMapping("/{id}")
     @RateLimiter(name = "deleteApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun delete(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String?>> {
+    fun delete(
+        @PathVariable id: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<String?>> {
         logger.debug("Deleting category by id $id")
         if (id.isBlank()) {
             logger.debug("Id came null")
@@ -173,7 +170,10 @@ class CategoryController(
     @DeleteMapping("/{ids}/many")
     @RateLimiter(name = "deleteApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun deleteMany(@PathVariable ids: String, request: HttpServletRequest): ResponseEntity<ResponseBody<String?>> {
+    fun deleteMany(
+        @PathVariable ids: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<String?>> {
         val idList = ids.split(",")
         logger.debug("Deleting many category by id {}", idList)
         this.facade.category.deleteMany(idList)
@@ -190,7 +190,9 @@ class CategoryController(
     @RateLimiter(name = "updateApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
     fun update(
-        @PathVariable id: String, @Valid @RequestBody dto: UpdateCategoryDTO, request: HttpServletRequest
+        @PathVariable id: String,
+        @Valid @RequestBody dto: UpdateCategoryDTO,
+        request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Updating category by id $id")
         if (id.isBlank()) {
@@ -214,12 +216,32 @@ class CategoryController(
             )
         }
 
+        if (category.get().name != dto.name) {
+
+            val optional = this.facade.category.getByName(dto.name)
+            if (optional.isPresent) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                    ResponseBody(
+                        LocalDateTime.now(),
+                        "Category name already exists!",
+                        request.requestURI,
+                        request.method,
+                        null
+                    )
+                )
+            }
+
+        }
+
         val update = this.facade.category.update(category.get(), dto)
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseBody(
-                LocalDateTime.now(), "Category updated!",
-                request.requestURI, request.method, update
+                LocalDateTime.now(),
+                "Category updated!",
+                request.requestURI,
+                request.method,
+                update
             )
         )
     }
@@ -228,9 +250,13 @@ class CategoryController(
     @RateLimiter(name = "readApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
     fun filter(
-        @RequestParam name: String, @RequestParam description: String, @RequestParam active: Boolean,
-        @RequestParam createdAtBefore: LocalDate, @RequestParam createdAtAfter: LocalDate,
-        @RequestParam(defaultValue = "0") page: Int, @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam name: String,
+        @RequestParam description: String,
+        @RequestParam active: Boolean,
+        @RequestParam createdAtBefore: LocalDate,
+        @RequestParam createdAtAfter: LocalDate,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Page<Category>>> {
 
@@ -253,7 +279,10 @@ class CategoryController(
     @PutMapping("/{id}/status")
     @RateLimiter(name = "updateApiRateLimiter")
     @SecurityRequirement(name = "bearerAuth")
-    fun changeStatus(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ResponseBody<Category?>> {
+    fun changeStatus(
+        @PathVariable id: String,
+        request: HttpServletRequest
+    ): ResponseEntity<ResponseBody<Category?>> {
         logger.debug("Getting category by id $id to change status")
 
         if (id.isBlank()) {
@@ -266,7 +295,6 @@ class CategoryController(
         }
 
         val category: Optional<Category> = this.facade.category.get(id)
-
         if (category.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseBody(

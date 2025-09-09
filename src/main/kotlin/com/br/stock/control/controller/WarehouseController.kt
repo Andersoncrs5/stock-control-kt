@@ -78,16 +78,6 @@ class WarehouseController(
         @Valid @RequestBody dto: CreateWareDTO,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<Warehouse?>> {
-        val byName = this.facadeServices.wareHouseService.existsByName(dto.name)
-        if (byName) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Name in use", request.requestURI,
-                    request.method, null
-                )
-            )
-        }
-
         val user = this.facadeServices.userService.get(dto.responsibleUserId)
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

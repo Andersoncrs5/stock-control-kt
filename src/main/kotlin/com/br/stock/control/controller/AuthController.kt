@@ -33,35 +33,6 @@ class AuthController(
         @Valid @RequestBody dto: RegisterUserDTO,
         request: HttpServletRequest
     ): ResponseEntity<ResponseBody<UserDTO?>> {
-        val existsByEmail = this.facade.userService.existsByEmail(dto.email)
-        if (existsByEmail) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Email already exists!",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
-
-        val existsByName: Boolean = this.facade.userService.existsByName(dto.name)
-        if (existsByName) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Name already exists!",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
-
-        dto.email = dto.email.trim()
-        if (dto.email == "admin@gmail.com" || dto.email.contains("admin", ignoreCase = true)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseBody(
-                    LocalDateTime.now(), "Email admin@gmail.com is not available",
-                    request.requestURI, request.method, null
-                )
-            )
-        }
 
         val user: User = this.mapper.toUser(dto)
         user.passwordHash = this.facade.cryptoService.encoderPassword(user.passwordHash)
@@ -103,8 +74,11 @@ class AuthController(
         if (user.accountNonLocked) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
-                    LocalDateTime.now(), "You are blocked",request.requestURI,
-                    request.method,null
+                    LocalDateTime.now(),
+                    "You are blocked",
+                    request.requestURI,
+                    request.method,
+                    null
                 )
             )
         }
@@ -114,8 +88,11 @@ class AuthController(
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseBody(
                     LocalDateTime.now(),
-                    "Login invalid",request.requestURI,
-                    request.method,null)
+                    "Login invalid",
+                    request.requestURI,
+                    request.method,
+                    null
+                )
             )
         }
 
@@ -128,7 +105,9 @@ class AuthController(
             ResponseBody(
                 LocalDateTime.now(),
                 "Logged with successfully!",
-                request.requestURI, request.method, tokens
+                request.requestURI,
+                request.method,
+                tokens
             )
         )
     }
