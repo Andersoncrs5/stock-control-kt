@@ -8,4 +8,6 @@ import java.util.Optional
 interface ProductRepository: MongoRepository<Product, String>, ProductCustomRepository {
     fun findBySku(sku: String): Optional<Product>
     fun findByBarcode(barcode: String): Optional<Product>
+    fun existsBySku(sku: String): Boolean
+    fun existsByBarcode(barcode: String): Boolean
 }
