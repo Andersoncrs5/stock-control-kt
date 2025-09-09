@@ -27,6 +27,4 @@ data class SystemLog(
     var version: Long,
     @CreatedDate
     var createdAt: LocalDate,
-    @LastModifiedDate
-    var updatedAt: LocalDate
 )
