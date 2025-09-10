@@ -21,14 +21,10 @@ data class UpdateProductDTO(
     var description: String = "",
 
     @field:NotBlank(message = "The field sku is required")
-    @field:Size(min = 3, max = 50, message = "The field sku must be between 3 and 50 characters")
+    @field:Size(min = 3, max = 150, message = "The field sku must be between 3 and 150 characters")
     var sku: String = "",
 
     @field:NotBlank(message = "The field barcode is required")
-    @field:Pattern(
-        regexp = "^[0-9]{8,40}$",
-        message = "The field barcode must contain only numbers and be between 8 and 40 digits"
-    )
     var barcode: String = "",
 
     @field:NotNull(message = "The field unitOfMeasure is required")

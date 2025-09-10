@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size
 
 data class CreateAddressDTO(
 
-    @CleanString
     @NotBlank(message = "The field street is required")
     @Size(min = 4, max = 150, message = "The field street have max size of 150 and the min of 4")
     var street: String = "",

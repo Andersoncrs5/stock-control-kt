@@ -31,4 +31,8 @@ class RedisService(
         redisTemplate.delete(key)
     }
 
+    fun deleteAll() {
+        redisTemplate.connectionFactory?.connection?.serverCommands()?.flushAll()
+    }
+
 }

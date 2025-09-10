@@ -13,11 +13,7 @@ data class CreateOrderDTO(
     var expectedDeliveryDate: LocalDate? = null,
 
     @field:NotNull(message = "The currency is required")
-    @field:Pattern(
-        regexp = "^(?!NONE$).*",
-        message = "The currency cannot be NONE"
-    )
-    var currency: CurrencyEnum = CurrencyEnum.NONE,
+    var currency: CurrencyEnum = CurrencyEnum.USD,
 
     @field:Size(max = 1000, message = "The notes field must have at most 1000 characters")
     var notes: String? = null,

@@ -268,7 +268,7 @@ class SupplierControllerTest {
         val dto = UpdateSupplierDTO(
             cnpj = Random.nextLong(10000000000).toString(),
             nameEnterprise = "Lorem enterprise inc",
-            notes = supplier.notes,
+            notes = supplier.notes?: "no notes",
             type = SupplierTypeEnum.GOVERNMENT,
             rating = Random.nextInt(1,11),
             categoriesId = categories

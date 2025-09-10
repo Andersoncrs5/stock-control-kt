@@ -15,6 +15,7 @@ import com.br.stock.control.model.entity.Warehouse
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import com.br.stock.control.model.enum.WareHouseEnum
 import com.br.stock.control.util.facades.FacadeRepository
+import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -37,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -45,10 +47,9 @@ import kotlin.random.Random
 @AutoConfigureMockMvc
 class StockControllerTest {
     @Autowired private lateinit var mockMvc: MockMvc
-
     @Autowired private lateinit var objectMapper: ObjectMapper
-
     @Autowired private lateinit var facadeRepository: FacadeRepository
+    @Autowired private lateinit var facadesServices: FacadeServices
 
     private val urlStock: String = "/v1/stock"
 
@@ -57,6 +58,7 @@ class StockControllerTest {
         this.facadeRepository.wareHouseRepository.deleteAll()
         this.facadeRepository.productRepository.deleteAll()
         this.facadeRepository.stockRepository.deleteAll()
+        this.facadesServices.redisService.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {
@@ -203,8 +205,8 @@ class StockControllerTest {
         val dto = CreateProductDTO(
             name = "name product $uuid", description= "description $uuid", sku = uuid + uuid,
             barcode = "${Random.nextLong(100000000)}", unitOfMeasure = UnitOfMeasureEnum.UNIT,
-            price = BigDecimal.valueOf(Random.nextDouble(99999.99)),
-            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            price = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
+            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
             imageUrl= "", minStockLevel = Random.nextInt(100), maxStockLevel = Random.nextInt(100000) + 100
         )
 

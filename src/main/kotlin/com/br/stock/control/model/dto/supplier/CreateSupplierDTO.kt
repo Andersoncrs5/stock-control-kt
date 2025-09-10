@@ -14,18 +14,12 @@ data class CreateSupplierDTO(
     var notes: String = "",
 
     @field:NotNull(message = "The supplier type is required")
-    @field:Pattern(
-        regexp = "^(?!NONE$).*",
-        message = "The type cannot be NONE"
-    )
-    var type: SupplierTypeEnum = SupplierTypeEnum.NONE,
+    var type: SupplierTypeEnum = SupplierTypeEnum.INDIVIDUAL,
 
     @field:Min(0, message = "The rating must be at least 0")
     @field:Max(10, message = "The rating cannot be greater than 10")
     var rating: Int = 0,
 
     var categoriesId: MutableList<String> = mutableListOf(),
-
-    @field:NotBlank(message = "The creator is required")
     var createdBy: String = ""
 )

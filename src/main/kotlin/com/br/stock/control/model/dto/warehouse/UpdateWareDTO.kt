@@ -27,9 +27,5 @@ data class UpdateWareDTO(
     var capacityCubicMeters: Double = 0.0,
 
     @field:NotNull(message = "The type field is required")
-    @field:Pattern(
-        regexp = "^(?!NONE$).*",
-        message = "The type field cannot be NONE"
-    )
-    var type: WareHouseEnum = WareHouseEnum.NONE
+    var type: WareHouseEnum = WareHouseEnum.ANOTHER
 )

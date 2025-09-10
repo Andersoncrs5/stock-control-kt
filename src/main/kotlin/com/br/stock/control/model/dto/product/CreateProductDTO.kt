@@ -17,15 +17,11 @@ data class CreateProductDTO(
     var description: String = "",
 
     @field:NotBlank(message = "The field sku is required")
-    @field:Size(min = 3, max = 50, message = "The field sku must be between 3 and 50 characters")
+    @field:Size(min = 3, max = 150, message = "The field sku must be between 3 and 150 characters")
     @field:UniqueProductSku
     var sku: String = "",
 
     @field:NotBlank(message = "The field barcode is required")
-    @field:Pattern(
-        regexp = "^[0-9]{8,40}$",
-        message = "The field barcode must contain only numbers and be between 8 and 40 digits"
-    )
     @field:UniqueProductBarcode
     var barcode: String = "",
 
@@ -33,11 +29,11 @@ data class CreateProductDTO(
     var unitOfMeasure: UnitOfMeasureEnum = UnitOfMeasureEnum.UNIT,
 
     @field:DecimalMin(value = "0.0", inclusive = false, message = "The field price must be greater than 0")
-    @field:Digits(integer = 10, fraction = 2, message = "The field price must be a valid monetary value")
+    @field:Digits(integer = 15, fraction = 2, message = "The field price must be a valid monetary value")
     var price: BigDecimal = BigDecimal.ZERO,
 
     @field:DecimalMin(value = "0.0", inclusive = true, message = "The field cost must not be negative")
-    @field:Digits(integer = 10, fraction = 2, message = "The field cost must be a valid monetary value")
+    @field:Digits(integer = 15, fraction = 2, message = "The field cost must be a valid monetary value")
     var cost: BigDecimal = BigDecimal.ZERO,
 
     @field:Size(max = 500, message = "The field imageUrl must be at most 500 characters")

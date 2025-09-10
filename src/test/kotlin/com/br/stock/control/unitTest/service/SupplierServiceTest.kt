@@ -135,7 +135,7 @@ class SupplierServiceTest {
         val dto = UpdateSupplierDTO(
             cnpj = UUID.randomUUID().toString(),
             nameEnterprise = "lorem enterprise",
-            notes = supplierMock.notes,
+            notes = supplierMock.notes ?: "no notes",
             type = SupplierTypeEnum.NONE,
             rating = 8,
             categoriesId = supplierMock.categoriesId

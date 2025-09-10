@@ -18,6 +18,7 @@ import com.br.stock.control.model.enum.CurrencyEnum
 import com.br.stock.control.model.enum.SupplierTypeEnum
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import com.br.stock.control.util.facades.FacadeRepository
+import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -37,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -50,6 +52,8 @@ class PurchaseOrderItemControllerTest {
 
     @Autowired private lateinit var facadeRepository: FacadeRepository
 
+    @Autowired private lateinit var facadesServices: FacadeServices
+
     private val urlOrder: String = "/v1/order"
     private val urlOrderItem: String = "/v1/order-item"
     private val urlSupplier = "/v1/supplier"
@@ -60,6 +64,7 @@ class PurchaseOrderItemControllerTest {
         this.facadeRepository.categoryRepository.deleteAll()
         this.facadeRepository.purchaseOrderRepository.deleteAll()
         this.facadeRepository.purchaseOrderItemRepository.deleteAll()
+        this.facadesServices.redisService.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {
@@ -219,8 +224,8 @@ class PurchaseOrderItemControllerTest {
         val dto = CreateProductDTO(
             name = "name product $uuid", description= "description $uuid", sku = uuid + uuid,
             barcode = "${Random.nextLong(100000000)}", unitOfMeasure = UnitOfMeasureEnum.UNIT,
-            price = BigDecimal.valueOf(Random.nextDouble(99999.99)),
-            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            price = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
+            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
             imageUrl= "", minStockLevel = Random.nextInt(100), maxStockLevel = Random.nextInt(100000) + 100
         )
 
@@ -252,7 +257,7 @@ class PurchaseOrderItemControllerTest {
         val dto = CreateOrderItemDTO(
             productId = product.id,
             quantity = 100,
-            unitPrice = BigDecimal.valueOf(10000.0),
+            unitPrice = BigDecimal.valueOf(10000.0).setScale(2, RoundingMode.HALF_UP),
             expectedQuantity = 100,
             backOrderedQuantity = 0,
             receivedQuantity = 100
@@ -294,7 +299,7 @@ class PurchaseOrderItemControllerTest {
         val dto = CreateOrderItemDTO(
             productId = product.id,
             quantity = 100,
-            unitPrice = BigDecimal.valueOf(10000.0),
+            unitPrice = BigDecimal.valueOf(10000.0).setScale(2, RoundingMode.HALF_UP),
             expectedQuantity = 100,
             backOrderedQuantity = 0,
             receivedQuantity = 100

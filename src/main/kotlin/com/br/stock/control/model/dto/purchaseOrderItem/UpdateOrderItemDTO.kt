@@ -11,7 +11,7 @@ data class UpdateOrderItemDTO(
     var quantity: Int = 0,
 
     @field:DecimalMin(value = "0.0", inclusive = false, message = "The unitPrice must be greater than 0")
-    var unitPrice: BigDecimal = BigDecimal.valueOf(0.0),
+    var unitPrice: BigDecimal = BigDecimal.ZERO,
 
     @field:Min(value = 0, message = "The expectedQuantity cannot be negative")
     var expectedQuantity: Int = 0,

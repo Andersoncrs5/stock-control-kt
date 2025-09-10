@@ -9,6 +9,7 @@ import com.br.stock.control.model.entity.Category
 import com.br.stock.control.model.entity.Product
 import com.br.stock.control.model.enum.UnitOfMeasureEnum
 import com.br.stock.control.util.facades.FacadeRepository
+import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -28,8 +29,10 @@ import java.util.UUID
 import kotlin.random.Random
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,6 +45,9 @@ class ProductControllerTest {
     private lateinit var objectMapper: ObjectMapper
 
     @Autowired
+    private lateinit var facadesServices: FacadeServices
+
+    @Autowired
     private lateinit var facadeRepository: FacadeRepository
 
     private val url: String = "/v1/product"
@@ -51,6 +57,7 @@ class ProductControllerTest {
         this.facadeRepository.userRepository.deleteAll()
         this.facadeRepository.productRepository.deleteAll()
         this.facadeRepository.categoryRepository.deleteAll()
+        facadesServices.redisService.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {
@@ -129,8 +136,8 @@ class ProductControllerTest {
         val dto = CreateProductDTO(
             name = "name product $uuid", description= "description $uuid", sku = uuid + uuid,
             barcode = "${Random.nextLong(100000000)}", unitOfMeasure = UnitOfMeasureEnum.UNIT,
-            price = BigDecimal.valueOf(Random.nextDouble(99999.99)),
-            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            price = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
+            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
             imageUrl= "", minStockLevel = Random.nextInt(100), maxStockLevel = Random.nextInt(100000) + 100
         )
 
@@ -163,8 +170,8 @@ class ProductControllerTest {
         val dto = CreateProductDTO(
             name = "name product $uuid", description= "description $uuid", sku = uuid,
             barcode = "${Random.nextLong(100000000)}", unitOfMeasure = UnitOfMeasureEnum.UNIT,
-            price = BigDecimal.valueOf(Random.nextDouble(99999.99)),
-            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)),
+            price = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
+            cost = BigDecimal.valueOf(Random.nextDouble(99999.99)).setScale(2, RoundingMode.HALF_UP),
             imageUrl= "", minStockLevel = Random.nextInt(100), maxStockLevel = Random.nextInt(100000) + 100
         )
 
@@ -275,8 +282,8 @@ class ProductControllerTest {
             name = "product updated", description = "description updated",
             sku = responseProduct.body.sku, barcode = responseProduct.body.barcode,
             unitOfMeasure = UnitOfMeasureEnum.UNIT,
-            price = BigDecimal.valueOf(Random.nextDouble(9999.99)),
-            cost = BigDecimal.valueOf(Random.nextDouble(999.99)),
+            price = BigDecimal.valueOf(Random.nextDouble(9999.99)).setScale(2, RoundingMode.HALF_UP),
+            cost = BigDecimal.valueOf(Random.nextDouble(999.99)).setScale(2, RoundingMode.HALF_UP),
             imageUrl = "", minStockLevel = Random.nextInt(99),
             maxStockLevel = Random.nextInt(9999) + 99, locationSpecificStock = mapOf()
         )

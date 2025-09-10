@@ -13,6 +13,7 @@ import com.br.stock.control.model.enum.CurrencyEnum
 import com.br.stock.control.model.enum.StatusEnum
 import com.br.stock.control.model.enum.SupplierTypeEnum
 import com.br.stock.control.util.facades.FacadeRepository
+import com.br.stock.control.util.facades.FacadeServices
 import com.br.stock.control.util.responses.ResponseBody
 import com.br.stock.control.util.responses.ResponseToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -43,6 +44,8 @@ class PurchaseOrderControllerTest {
 
     @Autowired private lateinit var objectMapper: ObjectMapper
 
+    @Autowired private lateinit var facadesServices: FacadeServices
+
     @Autowired private lateinit var facadeRepository: FacadeRepository
 
     private val urlOrder: String = "/v1/order"
@@ -52,6 +55,7 @@ class PurchaseOrderControllerTest {
         this.facadeRepository.userRepository.deleteAll()
         this.facadeRepository.supplierRepository.deleteAll()
         this.facadeRepository.purchaseOrderRepository.deleteAll()
+        facadesServices.redisService.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {

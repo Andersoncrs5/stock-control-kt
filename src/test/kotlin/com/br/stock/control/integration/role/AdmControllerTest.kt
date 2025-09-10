@@ -36,7 +36,7 @@ class AdmControllerTest {
     @Autowired private lateinit var mockMvc: MockMvc
     @Autowired private lateinit var objectMapper: ObjectMapper
     @Autowired private lateinit var facadeRepository: FacadeRepository
-    @Autowired private lateinit var facadeServices: FacadeServices
+    @Autowired private lateinit var facadesServices: FacadeServices
 
     private val urlUser: String = "/v1/user"
     private val urlAdm: String = "/v1/adm"
@@ -44,6 +44,7 @@ class AdmControllerTest {
     @BeforeEach fun setup() {
         this.facadeRepository.userRepository.deleteAll()
         this.facadeRepository.roleRepository.deleteAll()
+        this.facadesServices.redisService.deleteAll()
     }
 
     fun createUserAndLog(): ResponseToken {
@@ -105,7 +106,7 @@ class AdmControllerTest {
         val email = "admin@gmail.com"
 
         val passwordPlain = Random.nextLong(10000000).toString()
-        val passwordEncoded = facadeServices.cryptoService.encoderPassword(passwordPlain)
+        val passwordEncoded = facadesServices.cryptoService.encoderPassword(passwordPlain)
 
         val user = User(
             id = UUID.randomUUID().toString(),
