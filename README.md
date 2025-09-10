@@ -1,27 +1,45 @@
-# stock control api in spring boot kotlin
+Stock Control API (Spring Boot + Kotlin)
+📖 Description
 
-# Description
+This project is a Stock Control API built with Spring Boot (Kotlin).
+It provides a robust architecture for managing inventory, suppliers, and users, following clean code principles and best practices such as Unit of Work and Facades.
 
-# Features
+The system includes authentication with JWT, rate limiting, and is integrated with Redis for caching and session handling.
 
-    unit of work
+It also comes with integration and unit tests to ensure reliability and maintainability.
 
-    facades
+✨ Features
 
-    rate limiting
+✅ Unit of Work & Facade patterns
 
-    jwt
+✅ Authentication with JWT
 
-    Integration Test
+✅ Rate limiting for APIs
 
-    Unit Test
+✅ Integration & Unit testing
 
-# Tools
+✅ Redis integration
 
-    Spring boot 3.5.0
+🛠 Tools & Technologies
 
-    kotlin
+Spring Boot 3.5.0
 
-    mongosh
+Kotlin
 
-    redis
+MongoDB (mongosh)
+
+Redis
+
+Dozer Mapper
+
+🚀 Future Improvements
+
+🔹 More integration tests
+
+🔹 End-to-end (E2E) testing
+
+🔹 Input validation tests
+
+🔹 Password recovery via email
+
+🔹 Email & in-app notifications
